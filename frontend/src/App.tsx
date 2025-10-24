@@ -1,25 +1,16 @@
-import { Button } from "./components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-      <h1 className="text-4xl font-bold mb-6">UniVerse Test Page</h1>
-
-      {/* Test Card */}
-      <Card className="w-full max-w-sm mb-6">
-        <CardHeader>
-          <CardTitle>Test Card</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>This is a simple Shadcn Card component.</p>
-        </CardContent>
-      </Card>
-
-      {/* Test Button */}
-      <Button variant="default">Click Me</Button>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1 p-6 bg-[#FBF8BE]/30">
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </main>
     </div>
   );
 }
-
-export default App;
