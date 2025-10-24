@@ -11,7 +11,7 @@ The study discussion board connecting Australian university students for cross-c
 ## Requirements
 
 - **Node.js** v22.21.0
-- **npm** 10.8.1
+- **npm** 11.6.2
 - **Python** 3.11.9
 
 ---
@@ -57,3 +57,4 @@ npm install
 # Run frontend
 npm run dev
 ```
+> **Note:** Run `npm run start-all` to start both the frontend and backend in one command.
