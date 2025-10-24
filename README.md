@@ -29,11 +29,8 @@ cd universe
 
 ```bash
 cd backend
-```
 
-```bash
 # Setup and activate venv
-
 # Windows
 python -m venv venv
 venv\Scripts\activate
