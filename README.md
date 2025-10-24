@@ -57,3 +57,4 @@ npm install
 # Run frontend
 npm run dev
 ```
+> **Note:** Run `npm run start-all` to start both the frontend and backend in one command.
