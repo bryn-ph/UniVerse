@@ -11,6 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (name: string, email: string, password: string, universityId: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   updateUser: (userId: string, data: { name?: string; password?: string }) => Promise<{ success: boolean; error?: string }>;
   isLoading: boolean;
@@ -67,6 +68,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signup = async (name: string, email: string, password: string, universityId: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const response = await fetch('http://localhost:5001/api/users/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password, university_id: universityId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // After successful signup, automatically log the user in
+        const userData = {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          university: data.university,
+        };
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        return { success: true };
+      } else {
+        return { success: false, error: data.error || 'Signup failed' };
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -102,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUser, isLoading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, updateUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

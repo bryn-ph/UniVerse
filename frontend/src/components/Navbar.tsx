@@ -63,7 +63,7 @@ export default function Navbar() {
         </NavigationMenuList>
       </NavigationMenu>
 
-      {/* Right: User Info or Login Button */}
+      {/* Right: User Info or Login/Signup Buttons */}
       {user ? (
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
@@ -82,14 +82,24 @@ export default function Navbar() {
           </Button>
         </div>
       ) : (
-        <Link to="/login">
-          <Button
-            variant="secondary"
-            className="bg-[#FBF8BE] text-[#234E70] hover:bg-[#f1edaa]"
-          >
-            Login
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/login">
+            <Button
+              variant="ghost"
+              className="text-white hover:text-[#FBF8BE] hover:bg-transparent"
+            >
+              Login
+            </Button>
+          </Link>
+          <Link to="/signup">
+            <Button
+              variant="secondary"
+              className="bg-[#FBF8BE] text-[#234E70] hover:bg-[#f1edaa]"
+            >
+              Sign Up
+            </Button>
+          </Link>
+        </div>
       )}
     </header>
   );

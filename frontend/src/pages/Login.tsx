@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -76,6 +76,15 @@ export default function Login() {
 
           <div className="mt-4 text-center text-sm text-muted-foreground">
             <p>Demo credentials: alice@stanford.edu / password123</p>
+          </div>
+
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            <p>
+              Don't have an account?{' '}
+              <Link to="/signup" className="text-primary hover:underline font-medium">
+                Sign up
+              </Link>
+            </p>
           </div>
         </CardContent>
       </Card>
