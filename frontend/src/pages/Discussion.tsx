@@ -39,6 +39,7 @@ export default function DiscussionPage() {
 
   const [discussion, setDiscussion] = useState<Discussion | null>(null);
   const [replies, setReplies] = useState<Reply[]>([]);
+  const [classData, setClassData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +62,18 @@ export default function DiscussionPage() {
         });
         if (discErr) throw discErr;
         setDiscussion(discData as Discussion);
+
+        // Fetch class details to get class group information
+        if (discData?.class_id) {
+          try {
+            const { data: classResponse } = await api.GET("/api/classes/{class_id}", {
+              params: { path: { class_id: discData.class_id } },
+            });
+            setClassData(classResponse);
+          } catch (classErr) {
+            console.error("Failed to fetch class data:", classErr);
+          }
+        }
 
         // Fetch replies by query (typed client)
         const { data: repliesData, error: repliesErr } = await api.GET("/api/replies/", {
@@ -137,16 +150,24 @@ export default function DiscussionPage() {
               <div className="text-sm text-muted-foreground">{discussion.author || "Unknown User"}</div>
               <div className="text-xs text-muted-foreground">•</div>
               <div className="text-xs text-muted-foreground">{formatDateTime(discussion.created_at)}</div>
-              <div className="ml-4">
-                {discussion.class_id ? (
-                  <Link to={`/classes/${discussion.class_id}`} className="inline-block">
+              <div className="ml-4 flex items-center gap-2">
+                {/* Class Group Link */}
+                {classData?.class_group && (
+                  <Link to={`/class-groups/${classData.class_group_id}`} className="inline-block">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground hover:underline">
-                      {discussion.class_name || "Unknown Class"}
+                      {classData.class_group || "Class Group"}
+                    </span>
+                  </Link>
+                )}
+                {discussion.class_id ? (
+                  <Link to={`/classes/${discussion.class_id}`} state={{ from: 'home' }} className="inline-block">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground hover:underline">
+                      {discussion.class_name + " (" + discussion.university + ")" || "Unknown Class"}
                     </span>
                   </Link>
                 ) : (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
-                    {discussion.class_name || "Unknown Class"}
+                    {discussion.class_name + " (" + discussion.university + ")" || "Unknown Class"}
                   </span>
                 )}
               </div>
