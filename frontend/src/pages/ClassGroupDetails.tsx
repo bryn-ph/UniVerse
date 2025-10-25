@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import BackButton from "@/components/BackButton";
-import ClassCard from "@/components/ClassCard";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
+import DiscussionCard from "@/components/DiscussionCard";
 
 type ClassGroup = components["schemas"]["ClassGroup"];
 type Class = components["schemas"]["Class"];
+type Discussion = components["schemas"]["Discussion"];
 
 export default function ClassGroupDetails() {
   const { groupId } = useParams<{ groupId: string }>();
   const [groupData, setGroupData] = useState<ClassGroup | null>(null);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,13 +30,18 @@ export default function ClassGroupDetails() {
         params: { path: { group_id: groupId } },
       });
 
-      if (groupResponse.error) {
+      const discussionsResponse = await api.GET("/api/discussions/", {
+        params: { query: { class_group_id: groupId } },
+      });
+
+      if (groupResponse.error || discussionsResponse.error) {
         setError("Failed to load class group");
         setLoading(false);
         return;
       }
 
       setGroupData(groupResponse.data || null);
+      setDiscussions(discussionsResponse.data || []);
       setLoading(false);
     };
 
@@ -59,9 +66,7 @@ export default function ClassGroupDetails() {
   }
 
   const classes = (groupData.classes || []) as Class[];
-  const classCount = typeof groupData.class_count === 'number' 
-    ? groupData.class_count 
-    : classes.length;
+  const discussionCount = discussions.length; 
 
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
@@ -103,10 +108,10 @@ export default function ClassGroupDetails() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                 />
               </svg>
-              <span>{classCount} {classCount === 1 ? "class" : "classes"}</span>
+              <span>{discussionCount} {discussionCount === 1 ? "discussion" : "discussions"}</span>
             </div>
           </div>
         </CardContent>
@@ -114,33 +119,22 @@ export default function ClassGroupDetails() {
 
       {/* Classes Section */}
       <div className="w-full mb-6">
-        <h2 className="text-2xl font-bold">Classes in this Group</h2>
+        <h2 className="text-2xl font-bold">Discussions</h2>
       </div>
 
-      {/* Classes List */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {classes.length === 0 ? (
-          <Card className="border-dashed border-2 border-muted col-span-full">
+      {/* Discussions List */}
+      <div className="w-full space-y-4">
+        {discussions.length === 0 ? (
+          <Card className="border-dashed border-2 border-muted">
             <CardContent className="py-12 text-center text-muted-foreground">
-              <p className="text-sm">No classes in this group yet.</p>
+              <p className="text-sm">No discussions yet — be the first to start one!</p>
             </CardContent>
           </Card>
         ) : (
-          classes.map((classItem) => (
-            <ClassCard
-              key={classItem.id}
-              id={classItem.id!}
-              title={classItem.name!}
-              subtitle={classItem.university || "Unknown University"}
-              count={typeof classItem.discussion_count === 'number' ? classItem.discussion_count : 0}
-              countLabel="discussion"
-              tags={classItem.tags}
-              linkTo={`/classes/${classItem.id}`}
-              linkState={{ 
-                from: 'group',
-                groupId: groupData.id,
-                groupName: groupData.name 
-              }}
+          discussions.map((discussion) => (
+            <DiscussionCard
+              key={discussion.id}
+              discussion={discussion}
             />
           ))
         )}

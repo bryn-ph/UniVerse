@@ -5,29 +5,46 @@ import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 
 type ClassGroup = components["schemas"]["ClassGroup"];
+type ClassGroupWithDiscussions = ClassGroup & { discussionCount?: number };
 
 export default function ClassGroups() {
-  const [groups, setGroups] = useState<ClassGroup[]>([]);
+  const [groups, setGroups] = useState<ClassGroupWithDiscussions[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchGroups = async () => {
-      const { data, error: fetchError } = await api.GET("/api/class-groups/");
+    const fetchGroupsWithDiscussions = async () => {
+      const { data: groupsData, error: groupsError } = await api.GET("/api/class-groups/");
       
-      if (fetchError) {
+      if (groupsError) {
         setError("Failed to fetch class groups");
-        console.error("Error fetching class groups:", fetchError);
-      } else if (data) {
-        setGroups(data);
+        console.error("Error fetching class groups:", groupsError);
+        setLoading(false);
+        return;
+      }
+  
+      if (groupsData) {
+        // Fetch discussion counts for each group
+        const groupsWithCounts = await Promise.all(
+          groupsData.map(async (group) => {
+            const { data: discussionsData } = await api.GET("/api/discussions/", {
+              params: { query: { class_group_id: group.id } },
+            });
+            return {
+              ...group,
+              discussionCount: discussionsData?.length || 0
+            } as ClassGroupWithDiscussions;
+          })
+        );
+        setGroups(groupsWithCounts);
       }
       
       setLoading(false);
     };
-
-    fetchGroups();
+  
+    fetchGroupsWithDiscussions();
   }, []);
-
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
@@ -64,10 +81,9 @@ export default function ClassGroups() {
           id={group.id!}
           title={group.name!}
           subtitle={group.label || group.description || "Class Group"}
-          count={typeof group.class_count === 'number' ? group.class_count : 0}
-          countLabel="class"
+          count={group.discussionCount || 0}
+          countLabel="discussion"
           linkTo={`/class-groups/${group.id}`}
-          isGroup={true}
         />
       ))}
     </div>
