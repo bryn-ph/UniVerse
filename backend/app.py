@@ -10,19 +10,34 @@ from routes.reply import reply_bp
 from routes.university import university_bp
 from routes.user import user_bp
 from routes.classes import class_bp
-
-
+from flask_smorest import Api
 
 app = Flask(__name__)
 CORS(app)
 
+# Flask config
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///universe.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Smorest / OpenAPI config (required)
+app.config["API_TITLE"] = "UniVerse API"
+app.config["API_VERSION"] = "v1"
+app.config["OPENAPI_VERSION"] = "3.0.3"
+app.config["OPENAPI_URL_PREFIX"] = "/"
+app.config["OPENAPI_JSON_PATH"] = "openapi.json"
+app.config["OPENAPI_REDOC_PATH"] = "/redoc"
+app.config["OPENAPI_REDOC_URL"] = "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"
+app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger"
+app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
+
 # Register blueprints
-app.register_blueprint(discussion_bp, url_prefix="/api")
-app.register_blueprint(tags_bp, url_prefix="/api")
-app.register_blueprint(reply_bp, url_prefix="/api")
-app.register_blueprint(university_bp, url_prefix="/api")
-app.register_blueprint(user_bp, url_prefix="/api")
-app.register_blueprint(class_bp, url_prefix="/api")
+api = Api(app)
+api.register_blueprint(user_bp)
+api.register_blueprint(university_bp)
+api.register_blueprint(discussion_bp)
+api.register_blueprint(reply_bp)
+api.register_blueprint(class_bp)
+api.register_blueprint(tags_bp)
 
 
 # SQLite path
