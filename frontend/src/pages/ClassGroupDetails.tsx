@@ -5,13 +5,16 @@ import BackButton from "@/components/BackButton";
 import ClassCard from "@/components/ClassCard";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
+import DiscussionCard from "@/components/DiscussionCard";
 
 type ClassGroup = components["schemas"]["ClassGroup"];
 type Class = components["schemas"]["Class"];
+type Discussion = components["schemas"]["Discussion"];
 
 export default function ClassGroupDetails() {
   const { groupId } = useParams<{ groupId: string }>();
   const [groupData, setGroupData] = useState<ClassGroup | null>(null);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,13 +31,18 @@ export default function ClassGroupDetails() {
         params: { path: { group_id: groupId } },
       });
 
-      if (groupResponse.error) {
+      const discussionsResponse = await api.GET("/api/discussions/", {
+        params: { query: { class_group_id: groupId } },
+      });
+
+      if (groupResponse.error || discussionsResponse.error) {
         setError("Failed to load class group");
         setLoading(false);
         return;
       }
 
       setGroupData(groupResponse.data || null);
+      setDiscussions(discussionsResponse.data || []);
       setLoading(false);
     };
 
@@ -114,33 +122,22 @@ export default function ClassGroupDetails() {
 
       {/* Classes Section */}
       <div className="w-full mb-6">
-        <h2 className="text-2xl font-bold">Classes in this Group</h2>
+        <h2 className="text-2xl font-bold">Discussions</h2>
       </div>
 
       {/* Classes List */}
       <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {classes.length === 0 ? (
+        {discussions.length === 0 ? (
           <Card className="border-dashed border-2 border-muted col-span-full">
             <CardContent className="py-12 text-center text-muted-foreground">
-              <p className="text-sm">No classes in this group yet.</p>
+              <p className="text-sm">No discussions in this group yet.</p>
             </CardContent>
           </Card>
         ) : (
-          classes.map((classItem) => (
-            <ClassCard
-              key={classItem.id}
-              id={classItem.id!}
-              title={classItem.name!}
-              subtitle={classItem.university || "Unknown University"}
-              count={typeof classItem.discussion_count === 'number' ? classItem.discussion_count : 0}
-              countLabel="discussion"
-              tags={classItem.tags}
-              linkTo={`/classes/${classItem.id}`}
-              linkState={{ 
-                from: 'group',
-                groupId: groupData.id,
-                groupName: groupData.name 
-              }}
+          discussions.map((discussion) => (
+            <DiscussionCard
+              key={discussion.id}
+              discussion={discussion}
             />
           ))
         )}
