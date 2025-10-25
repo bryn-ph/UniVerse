@@ -1,16 +1,33 @@
 from flask import Blueprint, request, jsonify
 from models import db, Tag, Class
+from schemas import (
+    TagSchema,
+    TagCreateSchema,
+    TagUpdateSchema,
+    TagListSchema,
+    TagStatsSchema,
+    ClassMiniSchema
+)
+from marshmallow import ValidationError
 from sqlalchemy import func
 import uuid
 
 tags_bp = Blueprint("tags", __name__)
+
+# Initialize schema instances
+tag_schema = TagSchema()
+tag_create_schema = TagCreateSchema()
+tag_update_schema = TagUpdateSchema()
+tag_list_schema = TagListSchema(many=True)
+tag_stats_schema = TagStatsSchema()
+
 
 # ---------- GET /tags ----------
 @tags_bp.route("/tags", methods=["GET"])
 def get_tags():
     """Get all tags with optional filtering and statistics"""
     search = request.args.get("q")
-    sort_by = request.args.get("sort_by", "name")  
+    sort_by = request.args.get("sort_by", "name")  # name, usage
     limit = request.args.get("limit", type=int)
     
     q = Tag.query
@@ -32,14 +49,8 @@ def get_tags():
     
     tags = q.all()
     
-    return jsonify([
-        {
-            "id": str(tag.id),
-            "name": tag.name,
-            "class_count": len(tag.classes)
-        }
-        for tag in tags
-    ])
+    # Serialize using schema
+    return jsonify(tag_list_schema.dump(tags)), 200
 
 
 # ---------- GET /tags/<tag_id> ----------
@@ -51,20 +62,9 @@ def get_tag(tag_id):
         if not tag:
             return jsonify({"error": "Tag not found"}), 404
         
-        return jsonify({
-            "id": str(tag.id),
-            "name": tag.name,
-            "classes": [
-                {
-                    "id": str(c.id),
-                    "name": c.name,
-                    "university": c.university.name,
-                    "university_id": str(c.university_id)
-                }
-                for c in tag.classes
-            ],
-            "class_count": len(tag.classes)
-        })
+        # Serialize using schema
+        return jsonify(tag_schema.dump(tag)), 200
+        
     except ValueError:
         return jsonify({"error": "Invalid tag ID format"}), 400
 
@@ -73,42 +73,38 @@ def get_tag(tag_id):
 @tags_bp.route("/tags", methods=["POST"])
 def create_tag():
     """Create a new tag"""
-    data = request.get_json()
-    
-    # Validation
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-    
-    name = data.get("name")
-    if not name:
-        return jsonify({"error": "Tag name is required"}), 400
-    
-    # Check if tag already exists (case-insensitive)
-    existing_tag = Tag.query.filter(func.lower(Tag.name) == func.lower(name)).first()
-    if existing_tag:
-        return jsonify({
-            "error": "Tag already exists",
-            "existing_tag": {
-                "id": str(existing_tag.id),
-                "name": existing_tag.name
-            }
-        }), 409
-    
-    # Create new tag
-    new_tag = Tag(name=name.strip())
-    
     try:
+        # Validate input with schema
+        data = tag_create_schema.load(request.get_json())
+        
+        # Check if tag already exists (case-insensitive)
+        existing_tag = Tag.query.filter(
+            func.lower(Tag.name) == func.lower(data['name'])
+        ).first()
+        
+        if existing_tag:
+            return jsonify({
+                "error": "Tag already exists",
+                "existing_tag": {
+                    "id": str(existing_tag.id),
+                    "name": existing_tag.name
+                }
+            }), 409
+        
+        # Create new tag
+        new_tag = Tag(name=data['name'].strip())
+        
         db.session.add(new_tag)
         db.session.commit()
         
-        return jsonify({
-            "id": str(new_tag.id),
-            "name": new_tag.name,
-            "class_count": 0
-        }), 201
+        # Serialize response
+        return jsonify(tag_schema.dump(new_tag)), 201
+        
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Failed to create tag: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 # ---------- PUT /tags/<tag_id> ----------
@@ -120,42 +116,39 @@ def update_tag(tag_id):
         if not tag:
             return jsonify({"error": "Tag not found"}), 404
         
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
-        
-        new_name = data.get("name")
-        if not new_name:
-            return jsonify({"error": "Tag name is required"}), 400
+        # Validate input with schema (partial=True for optional fields)
+        data = tag_update_schema.load(request.get_json(), partial=True)
         
         # Check if new name already exists (excluding current tag)
-        existing_tag = Tag.query.filter(
-            func.lower(Tag.name) == func.lower(new_name),
-            Tag.id != uuid.UUID(tag_id)
-        ).first()
+        if 'name' in data:
+            existing_tag = Tag.query.filter(
+                func.lower(Tag.name) == func.lower(data['name']),
+                Tag.id != uuid.UUID(tag_id)
+            ).first()
+            
+            if existing_tag:
+                return jsonify({
+                    "error": "A tag with this name already exists",
+                    "existing_tag": {
+                        "id": str(existing_tag.id),
+                        "name": existing_tag.name
+                    }
+                }), 409
+            
+            tag.name = data['name'].strip()
         
-        if existing_tag:
-            return jsonify({
-                "error": "A tag with this name already exists",
-                "existing_tag": {
-                    "id": str(existing_tag.id),
-                    "name": existing_tag.name
-                }
-            }), 409
-        
-        tag.name = new_name.strip()
         db.session.commit()
         
-        return jsonify({
-            "id": str(tag.id),
-            "name": tag.name,
-            "class_count": len(tag.classes)
-        })
+        # Serialize response
+        return jsonify(tag_schema.dump(tag)), 200
+        
     except ValueError:
         return jsonify({"error": "Invalid tag ID format"}), 400
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Failed to update tag: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 # ---------- DELETE /tags/<tag_id> ----------
@@ -181,11 +174,12 @@ def delete_tag(tag_id):
                 "affected_classes": class_count
             }
         }), 200
+        
     except ValueError:
         return jsonify({"error": "Invalid tag ID format"}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Failed to delete tag: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 # ---------- GET /tags/<tag_id>/classes ----------
@@ -205,29 +199,19 @@ def get_tag_classes(tag_id):
         if university_id:
             classes = [c for c in classes if str(c.university_id) == university_id]
         
+        # Serialize classes
+        from schemas import ClassSchema
+        class_schema = ClassSchema(many=True)
+        
         return jsonify({
             "tag": {
                 "id": str(tag.id),
                 "name": tag.name
             },
-            "classes": [
-                {
-                    "id": str(c.id),
-                    "name": c.name,
-                    "university": c.university.name,
-                    "university_id": str(c.university_id),
-                    "tags": [
-                        {
-                            "id": str(t.id),
-                            "name": t.name
-                        }
-                        for t in c.tags
-                    ]
-                }
-                for c in classes
-            ],
+            "classes": class_schema.dump(classes),
             "total_classes": len(classes)
-        })
+        }), 200
+        
     except ValueError:
         return jsonify({"error": "Invalid tag ID format"}), 400
 
@@ -250,14 +234,8 @@ def get_popular_tags():
             .limit(limit)
             .all())
     
-    return jsonify([
-        {
-            "id": str(tag.id),
-            "name": tag.name,
-            "class_count": len([c for c in tag.classes if not university_id or str(c.university_id) == university_id])
-        }
-        for tag in tags
-    ])
+    # Serialize using schema
+    return jsonify(tag_list_schema.dump(tags)), 200
 
 
 # ---------- GET /tags/stats ----------
@@ -275,13 +253,15 @@ def get_tag_stats():
                  .order_by(func.count(Class.id).desc())
                  .first())
     
-    return jsonify({
+    stats_data = {
         "total_tags": total_tags,
         "unused_tags": unused_tags,
         "tags_in_use": total_tags - unused_tags,
         "most_popular_tag": {
             "id": str(most_used.id),
-            "name": most_used.name,
-            "class_count": len(most_used.classes)
+            "name": most_used.name
         } if most_used else None
-    })
+    }
+    
+    # Serialize using schema
+    return jsonify(tag_stats_schema.dump(stats_data)), 200

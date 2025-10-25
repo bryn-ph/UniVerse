@@ -50,13 +50,58 @@ class UniversitySchema(Schema):
     class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
 
 
+# ---------- TAG ----------
+class TagMiniSchema(Schema):
+    """Minimal tag info for nested use"""
+    id = fields.UUID()
+    name = fields.Str()
+
+
+class TagSchema(Schema):
+    """Full tag schema with all details"""
+    id = fields.UUID(dump_only=True)
+    name = fields.Str(required=True)
+    
+    # Related info
+    classes = fields.Nested(ClassMiniSchema, many=True, dump_only=True)
+    
+    # Automatically derived counts
+    class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
+
+
+class TagCreateSchema(Schema):
+    """Schema for creating a tag"""
+    name = fields.Str(required=True)
+
+
+class TagUpdateSchema(Schema):
+    """Schema for updating a tag (all fields optional)"""
+    name = fields.Str()
+
+
+class TagListSchema(Schema):
+    """Simplified schema for listing tags"""
+    id = fields.UUID()
+    name = fields.Str()
+    class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
+
+
+class TagStatsSchema(Schema):
+    """Schema for tag statistics"""
+    total_tags = fields.Int()
+    unused_tags = fields.Int()
+    tags_in_use = fields.Int()
+    most_popular_tag = fields.Nested(TagMiniSchema, allow_none=True)
+
+
+# ---------- CLASS ----------
 class ClassSchema(Schema):
     id = fields.UUID(dump_only=True)
     name = fields.Str(required=True)
     university_id = fields.UUID(required=True)
     university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True)
     discussion_count = fields.Function(lambda obj: len(getattr(obj, "discussions", [])))
-    tags = fields.List(fields.Str(), dump_only=True)
+    tags = fields.Nested(TagMiniSchema, many=True, dump_only=True)
 
 
 # ---------- REPLY ----------
