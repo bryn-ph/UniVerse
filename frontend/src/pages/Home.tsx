@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import api from "@/lib/api";
+import ShareMenu from "@/components/ShareMenu";
 import type { components } from "@/types/api.d";
 
 // Infer Discussion type from your OpenAPI schema
@@ -17,6 +18,9 @@ export default function Home() {
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // Share handled by reusable ShareMenu component
 
   // Fetch discussions from backend
   useEffect(() => {
@@ -61,7 +65,7 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col items-center w-full max-w-2xl mx-auto mt-10 px-4">
+  <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
       {/* Header */}
       <h1 className="text-4xl font-bold mb-2 text-center">UniVerse Feed</h1>
       <p className="text-primary/70 mb-8 text-center">
@@ -92,13 +96,11 @@ export default function Home() {
           </Card>
         ) : (
           discussions.map((post) => (
-            <Link
-              key={String(post.id)}
-              to={`/discussions/${post.id}`}
-              className="block no-underline text-inherit"
-              aria-label={`Open discussion ${post.title}`}
-            >
-              <Card className="w-full hover:shadow-sm transition-shadow">
+            <div key={String(post.id)} className="block no-underline text-inherit">
+              <Card
+                onClick={() => navigate(`/discussions/${post.id}`)}
+                className="w-full hover:shadow-sm transition-shadow cursor-pointer relative"
+              >
                 <CardHeader className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-base font-medium">{post.title}</CardTitle>
@@ -140,17 +142,15 @@ export default function Home() {
                         </div>
                       ) : null}
                     </div>
-                    {/* Right-side filler reserved for future links/actions */}
-                    <div className="w-16 flex-shrink-0 flex items-center justify-center">
-                      <div className="h-8 w-8 rounded-md bg-muted/20 flex items-center justify-center text-muted-foreground">
-                        {/* placeholder icon / empty space for future link */}
-                        <span className="text-xs">•••</span>
-                      </div>
-                    </div>
                   </div>
                 </CardContent>
+
+                {/* Bottom-right actions (three dots menu) */}
+                <div className="absolute bottom-3 right-3 flex items-end">
+                  <ShareMenu path={`/discussions/${post.id}`} />
+                </div>
               </Card>
-            </Link>
+            </div>
           ))
         )}
       </div>
