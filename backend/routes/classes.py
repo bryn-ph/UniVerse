@@ -5,6 +5,9 @@ from schemas import ClassSchema, ClassCreateSchema, ClassUpdateSchema
 from sqlalchemy import func
 import uuid
 
+# NEW: import service
+from services.grouping_service import assign_class_to_group
+
 class_bp = Blueprint("classes", __name__, url_prefix="/api/classes", description="Class operations")
 
 # ---------- GET /classes ----------
@@ -44,12 +47,10 @@ def get_class(class_id):
 @class_bp.response(201, ClassSchema)
 def create_class(data):
     """Create a new class"""
-    # Check university exists
     uni = University.query.get(data["university_id"])
     if not uni:
         class_bp.abort(404, message="University not found")
 
-    # Check unique constraint (name per university)
     existing = Class.query.filter_by(
         name=data["name"], 
         university_id=data["university_id"]
@@ -70,8 +71,13 @@ def create_class(data):
         new_class.tags = tags
 
     db.session.add(new_class)
-    db.session.commit()
-    return new_class
+    db.session.commit()   # ensure new_class.id exists for mapping
+
+    # --- HERO: auto group across universities ---
+    assign_class_to_group(new_class)
+
+    # Re-load if you want fresh relationships for serialization (optional)
+    return Class.query.get(new_class.id)
 
 
 # ---------- PUT /classes/<id> ----------
@@ -83,7 +89,6 @@ def update_class(data, class_id):
     c = Class.query.get_or_404(class_id)
 
     if "name" in data:
-        # Ensure uniqueness within same university
         existing = Class.query.filter_by(
             name=data["name"], 
             university_id=c.university_id
@@ -96,7 +101,11 @@ def update_class(data, class_id):
         c.tags = Tag.query.filter(Tag.id.in_(data["tag_ids"])).all()
 
     db.session.commit()
-    return c
+
+    # --- HERO: re-evaluate grouping if name/tags changed ---
+    assign_class_to_group(c)
+
+    return Class.query.get(c.id)
 
 
 # ---------- DELETE /classes/<id> ----------
