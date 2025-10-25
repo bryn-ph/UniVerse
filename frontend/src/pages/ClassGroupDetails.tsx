@@ -87,11 +87,11 @@ export default function ClassGroupDetails() {
             <div className="flex-1">
               <CardTitle className="text-3xl">{groupData.name}</CardTitle>
               {groupData.classes?.map((cls: Class) => (
-                <Link to={`/classes/${cls.id}`} key={cls.id}>
-                  <Badge variant="outline" className="text-sm mt-2 text-muted-foreground hover:bg-muted-foreground/10 hover:text-muted-foreground">
-                    {cls.name} ({cls.university})
-                  </Badge>
-                </Link>
+              <Link to={`/classes/${cls.id}`} key={cls.id} className="inline-block">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground hover:underline">
+                  {cls.name} ({cls.university})
+                </span>
+              </Link>
               ))}
             </div>
           </div>

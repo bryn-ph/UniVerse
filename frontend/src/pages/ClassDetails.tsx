@@ -121,7 +121,7 @@ export default function ClassDetails() {
             {/* Group Link */}
             {classData.class_group && (
               <Link to={`/class-groups/${classData.class_group_id}`} className="inline-block">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground hover:underline">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-200 text-muted-foreground hover:underline">
                   {classData.class_group || "Class Group"}
                 </span>
               </Link>
