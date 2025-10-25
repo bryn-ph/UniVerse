@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -31,6 +31,7 @@ function formatDateTime(dateString?: string) {
 export default function DiscussionPage() {
   const params = useParams();
   const discussionId = (params as { id?: string }).id ?? "";
+  const navigate = useNavigate();
 
   const { user } = useAuth();
 
@@ -119,6 +120,15 @@ export default function DiscussionPage() {
 
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4 space-y-6">
+      <div className="w-full">
+        <Button
+          variant="default"
+          onClick={() => navigate('/')}
+          className="bg-[#234E70] text-white hover:bg-[#1d3f56]"
+        >
+          ← Back
+        </Button>
+      </div>
       <Card className="w-full">
         <CardHeader>
           <div className="space-y-2">

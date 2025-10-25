@@ -24,16 +24,39 @@ export default function Home() {
   // Fetch discussions from backend
   useEffect(() => {
     const fetchDiscussions = async () => {
-      const { data, error: fetchError } = await api.GET("/api/discussions/");
+      try {
+        const res = await api.GET("/api/discussions/", { params: {} });
+        console.log("api.GET /api/discussions/ =>", res);
 
-      if (fetchError) {
-        console.error("Error fetching discussions:", fetchError);
-        setError("Failed to fetch recent posts");
-      } else if (data) {
-        setDiscussions(data);
+        // openapi-fetch returns { data, error }
+        if ((res as any).error) {
+          console.error("api client error:", (res as any).error);
+          setError("Failed to fetch recent posts");
+        } else if ((res as any).data) {
+          setDiscussions((res as any).data);
+        } else if (Array.isArray(res)) {
+          // some clients may return raw array
+          setDiscussions(res as any);
+        } else {
+          console.warn("Unexpected api.GET response shape", res);
+          setError("Failed to fetch recent posts (unexpected response)");
+        }
+      } catch (err) {
+        console.error("Error fetching discussions with api client:", err);
+        // fallback to native fetch
+        try {
+          const r = await fetch("/api/discussions/");
+          if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+          const data = await r.json();
+          console.log("fetch fallback /api/discussions/ =>", data);
+          setDiscussions(data);
+        } catch (err2) {
+          console.error("Fetch fallback failed:", err2);
+          setError("Failed to fetch recent posts");
+        }
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchDiscussions();
@@ -158,6 +181,14 @@ export default function Home() {
                   <div className="flex items-start gap-4">
                     <div className="flex-1">
                       <p className="text-sm text-muted-foreground">{post.body}</p>
+                      {/* Course tag / badge below the body */}
+                      {post.class_name ? (
+                        <div className="mt-3">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
+                            {post.class_name}
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
                     {/* Right-side filler reserved for future links/actions */}
                     <div className="w-16 flex-shrink-0 flex items-center justify-center">
