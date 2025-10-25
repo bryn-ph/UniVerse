@@ -1,7 +1,12 @@
 import Classes from "@/components/Classes";
 import ClassGroups from "@/components/ClassGroups";
+import CreateClassModal from "@/components/CreateClassModal";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function Explore() {
+    const [modalOpen, setModalOpen] = useState(false);
+
     return (
         <div className="flex flex-col items-center w-full max-w-7xl mx-auto mt-10 px-4">
             {/* Header */}
@@ -17,7 +22,15 @@ export default function Explore() {
             </div>
 
             <div className="w-full">
-                <h1 className="text-4xl font-bold mb-2 text-center">Explore Classes</h1>
+                <div className="flex items-center justify-center mb-2 relative">
+                    <h1 className="text-4xl font-bold">Explore Classes</h1>
+                    <Button 
+                        onClick={() => setModalOpen(true)}
+                        className="absolute right-0"
+                    >
+                        + Create Class
+                    </Button>
+                </div>
                 <p className="text-primary/70 mb-8 text-center">
                     Browse all available classes and join discussions.
                 </p>
@@ -26,6 +39,15 @@ export default function Explore() {
             <div className="w-full">
                 <Classes />
             </div>
+            
+            <CreateClassModal
+                open={modalOpen}
+                onOpenChange={setModalOpen}
+                onSuccess={() => {
+                    // Refresh classes list or navigate
+                    window.location.reload();
+                }}
+            />
         </div>
     );
 }
