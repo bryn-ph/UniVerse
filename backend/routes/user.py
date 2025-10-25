@@ -85,6 +85,7 @@ def delete_user(user_id):
 # ---------- POST /users/login ----------
 @user_bp.route("/login", methods=["POST"])
 @user_bp.arguments(UserLoginSchema)
+@user_bp.response(200)
 def login_user(data):
     """Simple login endpoint"""
     user = User.query.filter_by(email=data["email"]).first()

@@ -12,11 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import api from '@/lib/api';
+import type { components } from '@/types/api.d';
 
-interface University {
-  id: string;
-  name: string;
-}
+type University = components['schemas']['University'];
 
 export default function SignUp() {
   const [name, setName] = useState('');
@@ -35,12 +34,12 @@ export default function SignUp() {
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/universities/');
-        if (response.ok) {
-          const data = await response.json();
-          setUniversities(data);
-        } else {
+        const response = await api.GET('/api/universities/');
+
+        if (response.error) {
           setError('Failed to load universities');
+        } else if (response.data) {
+          setUniversities(response.data);
         }
       } catch (err) {
         console.error('Error fetching universities:', err);
@@ -137,7 +136,7 @@ export default function SignUp() {
                 </SelectTrigger>
                 <SelectContent>
                   {universities.map((uni) => (
-                    <SelectItem key={uni.id} value={uni.id}>
+                    <SelectItem key={uni.id} value={uni.id as string}>
                       {uni.name}
                     </SelectItem>
                   ))}
