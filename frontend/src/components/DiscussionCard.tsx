@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Tag from "@/components/Tag";
 import type { components } from "@/types/api.d";
 
 type Discussion = components["schemas"]["Discussion"];
@@ -58,9 +59,10 @@ export default function DiscussionCard({
             <div className="flex items-center justify-between">
               {/* Course tag / badge */}
               {discussion.class_name && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
-                  {discussion.class_name}
-                </span>
+                <Tag 
+                  tag={{ id: "class", name: discussion.class_name }} 
+                  variant="muted" 
+                />
               )}
               
               {/* Reply count badge */}

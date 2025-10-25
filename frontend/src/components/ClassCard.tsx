@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TagList } from "@/components/Tag";
 import type { components } from "@/types/api.d";
 
 type Tag = components["schemas"]["TagMini"];
@@ -81,18 +82,7 @@ export default function ClassCard({
           </div>
 
           {/* Tags */}
-          {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full"
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          )}
+          <TagList tags={tags || []} variant="primary" />
         </CardContent>
       </Card>
     </Link>

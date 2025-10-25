@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import CreateDiscussionModal from "@/components/CreateDiscussionModal";
 import DiscussionCard from "@/components/DiscussionCard";
+import { TagList } from "@/components/Tag";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 
@@ -121,18 +122,7 @@ export default function ClassDetails() {
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Tags */}
-          {classData.tags && classData.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {classData.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="px-3 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full"
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          )}
+          <TagList tags={classData.tags || []} variant="primary" />
 
           {/* Stats */}
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
