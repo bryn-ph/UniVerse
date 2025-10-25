@@ -1,7 +1,6 @@
 from flask_smorest import Blueprint
-from flask import request
 from models import db, Discussion, Class
-from schemas import DiscussionSchema, DiscussionCreateSchema, DiscussionUpdateSchema
+from schemas import DiscussionSchema, DiscussionCreateSchema, DiscussionUpdateSchema, DiscussionQuerySchema
 from sqlalchemy import or_
 import uuid
 
@@ -9,12 +8,13 @@ discussion_bp = Blueprint("discussion", __name__, url_prefix="/api/discussions")
 
 # ---------- GET /discussions ----------
 @discussion_bp.route("/", methods=["GET"])
+@discussion_bp.arguments(DiscussionQuerySchema, location="query")
 @discussion_bp.response(200, DiscussionSchema(many=True))
-def get_discussions():
+def get_discussions(query_args):
     """Get all discussions (optionally filtered by class or university)"""
-    class_id = request.args.get("class_id")
-    university_id = request.args.get("university_id")
-    search = request.args.get("q")
+    class_id = query_args.get("class_id")
+    university_id = query_args.get("university_id")
+    search = query_args.get("q")
 
     q = Discussion.query.join(Discussion.user).join(Discussion.class_)
     if class_id:

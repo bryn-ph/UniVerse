@@ -18,11 +18,13 @@ from flask import jsonify
 app = Flask(__name__)
 CORS(app)
 
-# Flask config
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///universe.db"
+# Database config - MUST be set BEFORE db.init_app()
+db_path = os.path.join(os.path.dirname(__file__), "database", "universe.db")
+os.makedirs(os.path.dirname(db_path), exist_ok=True)
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Smorest / OpenAPI config (required)
+# Smorest / OpenAPI config
 app.config["API_TITLE"] = "UniVerse API"
 app.config["API_VERSION"] = "v1"
 app.config["OPENAPI_VERSION"] = "3.0.3"
@@ -32,7 +34,6 @@ app.config["OPENAPI_REDOC_PATH"] = "/redoc"
 app.config["OPENAPI_REDOC_URL"] = "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"
 app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
-
 
 # Initialize db with Flask
 db.init_app(app)
@@ -45,12 +46,6 @@ api.register_blueprint(discussion_bp)
 api.register_blueprint(reply_bp)
 api.register_blueprint(class_bp)
 api.register_blueprint(tags_bp)
-
-
-# SQLite path
-db_path = os.path.join(os.path.dirname(__file__), "database", "universe.db")
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Without this, CASCADE deletes don't work
 @event.listens_for(Engine, "connect")

@@ -80,8 +80,8 @@ class TagUpdateSchema(Schema):
 class ClassSchema(Schema):
     id = fields.UUID(dump_only=True)
     name = fields.Str(required=True)
-    university_id = fields.UUID(required=True, load_only=True)
-    university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True)
+    university_id = fields.UUID(dump_only=True)
+    university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True, attribute="university")
     discussion_count = fields.Function(lambda obj: len(getattr(obj, "discussions", [])))
     tags = fields.Nested(TagMiniSchema, many=True, dump_only=True)
 
@@ -103,12 +103,12 @@ class ReplySchema(Schema):
     body = fields.Str(required=True)
     created_at = fields.DateTime(dump_only=True)
 
-    discussion_id = fields.UUID(required=True, load_only=True)
-    user_id = fields.UUID(required=True, load_only=True)
+    discussion_id = fields.UUID(dump_only=True)
+    user_id = fields.UUID(dump_only=True)
 
     # Related / derived info
-    author = fields.Pluck(UserBaseSchema, "name", dump_only=True)
-    discussion_title = fields.Pluck("DiscussionSchema", "title", dump_only=True)
+    author = fields.Pluck(UserBaseSchema, "name", dump_only=True, attribute="user")
+    discussion_title = fields.Pluck("DiscussionSchema", "title", dump_only=True, attribute="discussion")
 
 
 class ReplyCreateSchema(Schema):
@@ -121,6 +121,11 @@ class ReplyUpdateSchema(Schema):
     body = fields.Str(required=True)
 
 
+class ReplyQuerySchema(Schema):
+    discussion_id = fields.UUID()
+    user_id = fields.UUID()
+
+
 # ---------- DISCUSSION ----------
 class DiscussionSchema(Schema):
     id = fields.UUID(dump_only=True)
@@ -128,11 +133,11 @@ class DiscussionSchema(Schema):
     body = fields.Str(required=True)
     created_at = fields.DateTime(dump_only=True)
 
-    user_id = fields.UUID(required=True, load_only=True)
-    class_id = fields.UUID(required=True, load_only=True)
+    user_id = fields.UUID(dump_only=True)
+    class_id = fields.UUID(dump_only=True)
 
-    author = fields.Pluck(UserBaseSchema, "name", dump_only=True)
-    class_name = fields.Pluck(ClassMiniSchema, "name", dump_only=True)
+    author = fields.Pluck(UserBaseSchema, "name", dump_only=True, attribute="user")
+    class_name = fields.Pluck(ClassMiniSchema, "name", dump_only=True, attribute="class_")
     university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True, attribute="class_.university")
     replies = fields.Nested(ReplySchema, many=True, dump_only=True)
     reply_count = fields.Function(lambda obj: len(getattr(obj, "replies", [])))
@@ -148,3 +153,9 @@ class DiscussionCreateSchema(Schema):
 class DiscussionUpdateSchema(Schema):
     title = fields.Str()
     body = fields.Str()
+
+
+class DiscussionQuerySchema(Schema):
+    class_id = fields.UUID()
+    university_id = fields.UUID()
+    q = fields.Str()
