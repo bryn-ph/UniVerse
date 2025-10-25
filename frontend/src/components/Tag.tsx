@@ -1,29 +1,25 @@
+import { Badge, badgeVariants } from "@/components/ui/badge";
 import type { components } from "@/types/api.d";
+import type { VariantProps } from "class-variance-authority";
 
 type TagMini = components["schemas"]["TagMini"];
 
 interface TagProps {
   tag: TagMini;
-  variant?: "primary" | "muted";
+  variant?: "primary" | "muted" | "secondary" | "destructive" | "outline";
 }
 
 export default function Tag({ tag, variant = "primary" }: TagProps) {
-  const baseClasses = "inline-flex items-center rounded-full text-xs font-medium";
-  
-  const variantClasses = variant === "primary" 
-    ? "px-2 py-1 bg-primary/10 text-primary"
-    : "px-2 py-0.5 bg-muted/40 text-muted-foreground";
-
   return (
-    <span className={`${baseClasses} ${variantClasses}`}>
+    <Badge variant={variant as VariantProps<typeof badgeVariants>["variant"]} className="text-sm mt-2 text-muted-foreground hover:bg-muted-foreground/10 hover:text-muted-foreground">
       {tag.name}
-    </span>
+    </Badge>
   );
 }
 
 interface TagListProps {
   tags?: any;
-  variant?: "primary" | "muted";
+  variant?: "primary" | "muted" | "secondary" | "destructive" | "outline";
   className?: string;
 }
 

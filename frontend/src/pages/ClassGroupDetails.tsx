@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
@@ -7,6 +7,7 @@ import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 import DiscussionCard from "@/components/DiscussionCard";
 import CreateDiscussionModal from "@/components/CreateDiscussionModal";
+import { Badge } from "@/components/ui/badge";
 
 type ClassGroup = components["schemas"]["ClassGroup"];
 type Class = components["schemas"]["Class"];
@@ -85,11 +86,13 @@ export default function ClassGroupDetails() {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <CardTitle className="text-3xl">{groupData.name}</CardTitle>
-              {groupData.label && (
-                <CardDescription className="text-lg mt-2">
-                  {groupData.label}
-                </CardDescription>
-              )}
+              {groupData.classes?.map((cls: Class) => (
+                <Link to={`/classes/${cls.id}`} key={cls.id}>
+                  <Badge variant="outline" className="text-sm mt-2 text-muted-foreground hover:bg-muted-foreground/10 hover:text-muted-foreground">
+                    {cls.name} ({cls.university})
+                  </Badge>
+                </Link>
+              ))}
             </div>
           </div>
         </CardHeader>
