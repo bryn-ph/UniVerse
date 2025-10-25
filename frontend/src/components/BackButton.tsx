@@ -29,7 +29,7 @@ export default function BackButton({
       variant={primary ? "default" : "ghost"}
       size={size}
       onClick={onClick}
-      className={`${primary ? primaryClasses : ""} ${className}`.trim()}
+      className={`${primary ? primaryClasses : "hover:cursor-pointer"} ${className}`.trim()}
     >
       {content}
     </Button>
