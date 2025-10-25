@@ -177,7 +177,7 @@ export default function ClassDetails() {
         <CreateDiscussionModal
           open={modalOpen}
           onOpenChange={setModalOpen}
-          classId={classId}
+          groupId={classData.group_id as string}
           onSuccess={() => {
             // Refetch discussions after creation
             window.location.reload();

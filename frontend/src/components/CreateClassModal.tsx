@@ -12,6 +12,7 @@ type Tag = components["schemas"]["TagMini"];
 interface CreateClassModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  classId?: string;
   onSuccess?: () => void;
 }
 
@@ -24,6 +25,7 @@ export default function CreateClassModal({
   const [tagIds, setTagIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [classId, setClassId] = useState<string | null>(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const { user } = useAuth();
 
@@ -63,6 +65,7 @@ export default function CreateClassModal({
       body: { 
         name: name.trim(),
         university_id: user.university_id,
+        class_group_id: classId,
         tag_ids: tagIds.length > 0 ? tagIds : undefined
       },
     });
@@ -77,6 +80,7 @@ export default function CreateClassModal({
     // Success - clear form and close modal
     setName("");
     setTagIds([]);
+    setClassId(null);
     onOpenChange(false);
     onSuccess?.();
   };
@@ -119,6 +123,15 @@ export default function CreateClassModal({
           <Input
             id="name"
             placeholder="e.g., Introduction to Computer Science"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="className">Class</Label>
+          <Input
+            id="className"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />

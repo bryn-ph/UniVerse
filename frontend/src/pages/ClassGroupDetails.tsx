@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 import DiscussionCard from "@/components/DiscussionCard";
+import CreateDiscussionModal from "@/components/CreateDiscussionModal";
 
 type ClassGroup = components["schemas"]["ClassGroup"];
 type Class = components["schemas"]["Class"];
@@ -16,6 +18,8 @@ export default function ClassGroupDetails() {
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [classId, setClassId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,8 +122,11 @@ export default function ClassGroupDetails() {
       </Card>
 
       {/* Classes Section */}
-      <div className="w-full mb-6">
+      <div className="w-full mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Discussions</h2>
+        <Button onClick={() => setModalOpen(true)}>
+          + Create Discussion
+        </Button>
       </div>
 
       {/* Discussions List */}
@@ -139,6 +146,17 @@ export default function ClassGroupDetails() {
           ))
         )}
       </div>
+
+      {/* Create Discussion Modal */}
+      <CreateDiscussionModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        groupId={groupId!}
+        onSuccess={() => {
+          // Refetch discussions after creation
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }
