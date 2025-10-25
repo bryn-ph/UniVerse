@@ -61,4 +61,4 @@ npm run dev
 ---
 
 > **Note:** Run `npm run start-all` to start both the frontend and backend in one command.
-> Generate api.ts based off schemas.py with `npm run generate-types`
+> Generate api.ts based off schemas.py with `npm run generate-api`
