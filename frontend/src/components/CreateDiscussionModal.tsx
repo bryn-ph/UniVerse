@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "./Modal";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -6,24 +6,58 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
+import type { components } from "@/types/api.d";
+
+type Class = components["schemas"]["Class"];
 
 interface CreateDiscussionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  classId: string;
+  groupId: string;
   onSuccess?: () => void;
 }
 
 export default function CreateDiscussionModal({
   open,
   onOpenChange,
-  classId,
+  groupId,
   onSuccess,
 }: CreateDiscussionModalProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [classId_, setClassId] = useState<string | null>(null);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (open) {
+      fetchData();
+    }
+  }, [open]);
+
+  const fetchData = async () => {
+    setIsLoadingData(true);
+
+    try {
+      const groupResponse = await api.GET("/api/class-groups/{group_id}", {
+        params: {
+          path: {
+            group_id: groupId,
+          },
+        },
+      });
+      if (groupResponse.data?.classes) {
+        setClasses(groupResponse.data.classes as Class[]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
 
   if (!user) {
     return null;
@@ -39,7 +73,7 @@ export default function CreateDiscussionModal({
         title, 
         body, 
         user_id: user.id,
-        class_id: classId 
+        class_id: classId_ || ""
       },
     });
 
@@ -53,6 +87,7 @@ export default function CreateDiscussionModal({
     // Success - clear form and close modal
     setTitle("");
     setBody("");
+    setClassId(null);
     onOpenChange(false);
     onSuccess?.();
   };
@@ -87,6 +122,24 @@ export default function CreateDiscussionModal({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="classId_">Class</Label>
+          <Select
+            value={classId_ || ""}
+            onValueChange={(value) => setClassId(value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a class" />
+            </SelectTrigger>
+            <SelectContent>
+              {classes.map((class_) => (
+                <SelectItem key={class_.id} value={class_.id!}>
+                  {class_.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="body">Description</Label>
