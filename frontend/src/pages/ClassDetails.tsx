@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
@@ -116,8 +116,16 @@ export default function ClassDetails() {
       <Card className="w-full mb-8">
         <CardHeader>
           <CardTitle className="text-3xl">{classData.name}</CardTitle>
-          <CardDescription className="text-lg">
-            {classData.university || "Unknown University"}
+          <CardDescription className="text-lg flex items-center gap-2">
+            <span>{classData.university || "Unknown University"}</span>
+            {/* Group Link */}
+            {classData.class_group && (
+              <Link to={`/class-groups/${classData.class_group_id}`} className="inline-block">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground hover:underline">
+                  {classData.class_group || "Class Group"}
+                </span>
+              </Link>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
