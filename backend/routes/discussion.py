@@ -42,3 +42,93 @@ def get_discussions():
         for d in discussions
     ])
 
+
+# ---------- POST /discussions ----------
+@discussion_bp.route("/discussions", methods=["POST"])
+def create_discussion():
+    """Create a new discussion"""
+    data = request.get_json()
+    title = data.get("title")
+    body = data.get("body")
+    user_id = data.get("user_id")  # (for now, pass in frontend)
+    class_id = data.get("class_id")
+
+    if not all([title, body, user_id, class_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    discussion = Discussion(
+        id=uuid.uuid4(),
+        title=title,
+        body=body,
+        user_id=user_id,
+        class_id=class_id
+    )
+
+    db.session.add(discussion)
+    db.session.commit()
+
+    return jsonify({
+        "id": str(discussion.id),
+        "title": discussion.title,
+        "body": discussion.body,
+        "class_id": str(discussion.class_id),
+        "created_at": discussion.created_at.isoformat(),
+    }), 201
+
+
+# ---------- GET /discussions/<id> ----------
+@discussion_bp.route("/discussions/<uuid:discussion_id>", methods=["GET"])
+def get_discussion(discussion_id):
+    """Get a single discussion and its replies"""
+    discussion = Discussion.query.get(discussion_id)
+    if not discussion:
+        return jsonify({"error": "Not found"}), 404
+
+    replies = [
+        {
+            "id": str(r.id),
+            "body": r.body,
+            "author": r.user.name,
+            "created_at": r.created_at.isoformat(),
+        }
+        for r in discussion.replies
+    ]
+
+    return jsonify({
+        "id": str(discussion.id),
+        "title": discussion.title,
+        "body": discussion.body,
+        "author": discussion.user.name,
+        "class": discussion.class_.name,
+        "university": discussion.class_.university.name,
+        "created_at": discussion.created_at.isoformat(),
+        "replies": replies
+    })
+
+
+# ---------- POST /discussions/<id>/replies ----------
+@discussion_bp.route("/discussions/<uuid:discussion_id>/replies", methods=["POST"])
+def add_reply(discussion_id):
+    """Add a reply to a discussion"""
+    data = request.get_json()
+    body = data.get("body")
+    user_id = data.get("user_id")
+
+    if not all([body, user_id]):
+        return jsonify({"error": "Missing fields"}), 400
+
+    reply = Reply(
+        id=uuid.uuid4(),
+        body=body,
+        user_id=user_id,
+        discussion_id=discussion_id
+    )
+    db.session.add(reply)
+    db.session.commit()
+
+    return jsonify({
+        "id": str(reply.id),
+        "body": reply.body,
+        "created_at": reply.created_at.isoformat(),
+        "author": reply.user.name
+    }), 201
