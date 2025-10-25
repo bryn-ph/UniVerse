@@ -39,15 +39,15 @@ def seed_data():
     print("\n" + "="*60)
     print("SEEDING DATABASE")
     print("="*60)
-    
     with app.app_context():
         # Create Universities
         print("\n Creating universities...")
-        uni1 = University(name="Stanford University")
-        uni2 = University(name="MIT")
-        uni3 = University(name="UC Berkeley")
+        uni1 = University(name="University of Melbourne")
+        uni2 = University(name="UNSW Sydney")
+        uni3 = University(name="Australian National University")
+        uni4 = University(name="RMIT University")
 
-        db.session.add_all([uni1, uni2, uni3])
+        db.session.add_all([uni1, uni2, uni3, uni4])
         db.session.commit()
         print(f"Created {University.query.count()} universities")
 
@@ -55,14 +55,16 @@ def seed_data():
         print("Creating users...")
         pw = generate_password_hash("password123")  # optional hashing
         users = [
-            User(name="Alice Johnson", email="alice@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
-            User(name="Bob Smith", email="bob@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
-            User(name="Charlie Brown", email="charlie@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
-            User(name="Diana Prince", email="diana@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
-            User(name="Eve Martinez", email="eve@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
-            User(name="Frank Zhang", email="frank@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
-            User(name="Grace Lee", email="grace@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
-            User(name="Henry Wilson", email="henry@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Alice Johnson", email="alice@unimelb.edu.au", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Bob Smith", email="bob@unimelb.edu.au", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Charlie Brown", email="charlie@unsw.edu.au", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Diana Prince", email="diana@unsw.edu.au", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Eve Martinez", email="eve@anu.edu.au", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Frank Zhang", email="frank@anu.edu.au", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Grace Lee", email="grace@unimelb.edu.au", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Henry Wilson", email="henry@unsw.edu.au", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Isla Walker", email="isla@rmit.edu.au", password=generate_password_hash("password123"), university_id=uni4.id),
+            User(name="Jack Nguyen", email="jack@rmit.edu.au", password=generate_password_hash("password123"), university_id=uni4.id),
         ]
         db.session.add_all(users)
         db.session.commit()
@@ -89,7 +91,7 @@ def seed_data():
         # ---------- Classes ----------
         print("Creating classes...")
 
-        # Stanford
+        # University of Melbourne
         cs101 = Class(name="Introduction to Computer Science", university_id=uni1.id)
         cs101.tags.extend([tags[0], tags[1]])  # CS, Math
 
@@ -99,21 +101,50 @@ def seed_data():
         math51 = Class(name="Linear Algebra", university_id=uni1.id)
         math51.tags.extend([tags[1], tags[7]])  # Math, Statistics
 
-        # MIT
+        # extra classes for UniMelb
+        melb_se = Class(name="Software Engineering", university_id=uni1.id)
+        melb_se.tags.extend([tags[0], tags[3]])
+        melb_db = Class(name="Intro to Databases", university_id=uni1.id)
+        melb_db.tags.extend([tags[0], tags[9]])
+
+        # UNSW Sydney
         mit_cs = Class(name="Algorithms and Data Structures", university_id=uni2.id)
         mit_cs.tags.extend([tags[0], tags[1]])
 
         mit_ai = Class(name="Artificial Intelligence", university_id=uni2.id)
         mit_ai.tags.extend([tags[0], tags[8]])
 
-        # Berkeley
-        berkeley_ds = Class(name="Data Science Fundamentals", university_id=uni3.id)
-        berkeley_ds.tags.extend([tags[0], tags[7], tags[9]])
+        # extra classes for UNSW
+        unsw_robotics = Class(name="Robotics", university_id=uni2.id)
+        unsw_robotics.tags.extend([tags[3], tags[0]])
+        unsw_networks = Class(name="Computer Networks", university_id=uni2.id)
+        unsw_networks.tags.extend([tags[0]])
 
-        berkeley_physics = Class(name="Quantum Mechanics", university_id=uni3.id)
-        berkeley_physics.tags.extend([tags[2], tags[1]])
+        # Australian National University
+        anu_ds = Class(name="Data Science Fundamentals", university_id=uni3.id)
+        anu_ds.tags.extend([tags[0], tags[7], tags[9]])
 
-        all_classes = [cs101, cs229, math51, mit_cs, mit_ai, berkeley_ds, berkeley_physics]
+        anu_physics = Class(name="Quantum Mechanics", university_id=uni3.id)
+        anu_physics.tags.extend([tags[2], tags[1]])
+
+        # extra classes for ANU
+        anu_stats = Class(name="Statistical Methods", university_id=uni3.id)
+        anu_stats.tags.extend([tags[7], tags[1]])
+        anu_qc = Class(name="Quantum Computing", university_id=uni3.id)
+        anu_qc.tags.extend([tags[2], tags[0]])
+
+        # RMIT
+        rmit_is = Class(name="Information Systems", university_id=uni4.id)
+        rmit_is.tags.extend([tags[0], tags[6]])
+        rmit_cyber = Class(name="Cyber Security", university_id=uni4.id)
+        rmit_cyber.tags.extend([tags[0], tags[3]])
+
+        all_classes = [
+            cs101, cs229, math51, melb_se, melb_db,
+            mit_cs, mit_ai, unsw_robotics, unsw_networks,
+            anu_ds, anu_physics, anu_stats, anu_qc,
+            rmit_is, rmit_cyber,
+        ]
         db.session.add_all(all_classes)
         db.session.commit()
         print(f"Created {Class.query.count()} classes")
@@ -129,7 +160,7 @@ def seed_data():
         discussions = [
             Discussion(
                 title="How do I install Python?",
-                body="I'm having trouble installing Python on my Mac. Can anyone help?",
+                body="I'm having trouble installing Python on my computer. Can anyone help?",
                 user_id=users[0].id,
                 class_id=cs101.id
             ),
@@ -152,8 +183,8 @@ def seed_data():
                 class_id=cs229.id
             ),
             Discussion(
-                title="Midterm study group?",
-                body="Anyone want to form a study group for the upcoming midterm?",
+                title="Study group for the upcoming assessment",
+                body="Anyone want to form a study group for the upcoming assessment?",
                 user_id=users[2].id,
                 class_id=mit_ai.id
             ),
@@ -167,13 +198,26 @@ def seed_data():
                 title="Project partners needed",
                 body="Looking for 2 people to join my project team. DM me if interested!",
                 user_id=users[4].id,
-                class_id=berkeley_ds.id
+                class_id=anu_ds.id
             ),
             Discussion(
                 title="Pandas vs NumPy - when to use which?",
                 body="I'm confused about when I should use Pandas DataFrames vs NumPy arrays.",
                 user_id=users[5].id,
-                class_id=berkeley_ds.id
+                class_id=anu_ds.id
+            ),
+            # Discussions for RMIT classes
+            Discussion(
+                title="Best tools for building secure web apps",
+                body="Any suggestions for libraries or tools to help with secure authentication and session management?",
+                user_id=users[8].id,
+                class_id=rmit_cyber.id
+            ),
+            Discussion(
+                title="How to manage company data in Information Systems",
+                body="Looking for best practices when designing information systems for small businesses.",
+                user_id=users[9].id,
+                class_id=rmit_is.id
             ),
         ]
         db.session.add_all(discussions)
@@ -184,17 +228,17 @@ def seed_data():
         print("Creating replies...")
         replies = [
             Reply(
-                body="Go to python.org and download the latest version. The installer should work on Mac.",
+                body="Go to python.org and download the latest version. The installer should work on most platforms.",
                 user_id=users[1].id,
                 discussion_id=discussions[0].id
             ),
             Reply(
-                body="I recommend using Homebrew! Just run: brew install python",
+                body="I recommend using Homebrew on macOS or your distro's package manager on Linux.",
                 user_id=users[6].id,
                 discussion_id=discussions[0].id
             ),
             Reply(
-                body="Thanks both! The Homebrew method worked perfectly.",
+                body="Thanks both! The package manager method worked perfectly.",
                 user_id=users[0].id,
                 discussion_id=discussions[0].id
             ),
@@ -262,6 +306,17 @@ def seed_data():
                 body="Pandas is built on top of NumPy, so they work well together!",
                 user_id=users[5].id,
                 discussion_id=discussions[7].id
+            ),
+            # Replies for RMIT discussions
+            Reply(
+                body="For secure web apps look at OAuth libraries and keep sessions short. Helmet/middleware can help too.",
+                user_id=users[8].id,
+                discussion_id=discussions[8].id
+            ),
+            Reply(
+                body="For small businesses, use normalized schemas and keep backups. Consider cloud-hosted DBs for reliability.",
+                user_id=users[9].id,
+                discussion_id=discussions[9].id
             ),
         ]
         db.session.add_all(replies)

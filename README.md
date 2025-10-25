@@ -143,6 +143,9 @@ pip install -r requirements.txt
 
 # Run backend
 python app.py
+
+# (OPTIONAL - With backend running) Seed the database
+python seed.py
 ```
 
 ### 3. Frontend Setup
