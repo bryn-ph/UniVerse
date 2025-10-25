@@ -75,7 +75,7 @@ export default function Login() {
           </form>
 
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            <p>Demo credentials: alice@unimelb.edu.au / password123</p>
+            <p>Demo credentials: jack@rmit.edu.au / password123</p>
           </div>
 
           <div className="mt-4 text-center text-sm text-muted-foreground">
