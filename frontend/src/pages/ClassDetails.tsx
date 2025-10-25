@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import CreateDiscussionModal from "@/components/CreateDiscussionModal";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 
@@ -10,10 +11,15 @@ type Discussion = components["schemas"]["Discussion"];
 
 export default function ClassDetails() {
   const { classId } = useParams<{ classId: string }>();
+  const location = useLocation();
   const [classData, setClassData] = useState<Class | null>(null);
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // Get navigation state (if coming from a class group)
+  const state = location.state as { from?: string; groupId?: string; groupName?: string } | null;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,11 +72,18 @@ export default function ClassDetails() {
   }
 
   if (error || !classData) {
+    const backLink = state?.from === 'group' && state.groupId 
+      ? `/class-groups/${state.groupId}`
+      : "/explore";
+    const backText = state?.from === 'group' && state.groupName
+      ? `← Back to ${state.groupName}`
+      : "← Back to Explore";
+
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <p className="text-destructive">{error || "Class not found"}</p>
-        <Link to="/explore">
-          <Button variant="outline">← Back to Explore</Button>
+        <Link to={backLink}>
+          <Button variant="outline">{backText}</Button>
         </Link>
       </div>
     );
@@ -80,12 +93,20 @@ export default function ClassDetails() {
     ? classData.discussion_count 
     : discussions.length;
 
+  // Determine back button text and link
+  const backLink = state?.from === 'group' && state.groupId 
+    ? `/class-groups/${state.groupId}`
+    : "/explore";
+  const backText = state?.from === 'group' && state.groupName
+    ? `← Back to ${state.groupName}`
+    : "← Back to Explore";
+
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
       {/* Back Button */}
       <div className="w-full mb-4">
-        <Link to="/explore">
-          <Button variant="ghost" size="sm">← Back to Explore</Button>
+        <Link to={backLink}>
+          <Button variant="ghost" size="sm">{backText}</Button>
         </Link>
       </div>
 
@@ -137,7 +158,7 @@ export default function ClassDetails() {
       {/* Create Discussion Button */}
       <div className="w-full mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Discussions</h2>
-        <Button>+ New Discussion</Button>
+        <Button onClick={() => setModalOpen(true)}>+ New Discussion</Button>
       </div>
 
       {/* Discussions List */}
@@ -199,6 +220,19 @@ export default function ClassDetails() {
           })
         )}
       </div>
+
+      {/* Create Discussion Modal */}
+      {classId && (
+        <CreateDiscussionModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          classId={classId}
+          onSuccess={() => {
+            // Refetch discussions after creation
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 }

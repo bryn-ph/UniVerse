@@ -57,6 +57,31 @@ class UniversityCreateSchema(Schema):
 class UniversityUpdateSchema(Schema):
     name = fields.Str(required=True)
 
+# ---------- CLASS GROUP ----------
+class ClassGroupMiniSchema(Schema):
+    id = fields.UUID()
+    name = fields.Str()
+    label = fields.Str()
+
+
+class ClassGroupSchema(Schema):
+    id = fields.UUID(dump_only=True)
+    name = fields.Str(required=True)
+    label = fields.Str()
+    description = fields.Str()
+    signature = fields.Str(dump_only=True)
+    classes = fields.Nested("ClassSchema", many=True, dump_only=True, attribute="classes")
+    class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
+
+
+class ClassGroupCreateSchema(Schema):
+    name = fields.Str(required=True)
+    description = fields.Str()
+
+
+class ClassGroupUpdateSchema(Schema):
+    name = fields.Str()
+    description = fields.Str()
 
 class TagMiniSchema(Schema):
     id = fields.UUID()
@@ -82,6 +107,8 @@ class ClassSchema(Schema):
     name = fields.Str(required=True)
     university_id = fields.UUID(dump_only=True)
     university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True, attribute="university")
+    class_group_id = fields.UUID(dump_only=True)
+    class_group = fields.Pluck(ClassGroupMiniSchema, "name", dump_only=True, attribute="class_group")
     discussion_count = fields.Function(lambda obj: len(getattr(obj, "discussions", [])))
     tags = fields.Nested(TagMiniSchema, many=True, dump_only=True)
     group_id = fields.Function(lambda obj: str(obj.group_map.group_id) if getattr(obj, "group_map", None) else None)
@@ -93,11 +120,13 @@ class ClassSchema(Schema):
 class ClassCreateSchema(Schema):
     name = fields.Str(required=True)
     university_id = fields.UUID(required=True)
+    class_group_id = fields.UUID(required=True)
     tag_ids = fields.List(fields.UUID(), load_only=True)
 
 
 class ClassUpdateSchema(Schema):
     name = fields.Str()
+    class_group_id = fields.UUID()
     tag_ids = fields.List(fields.UUID())
 
 

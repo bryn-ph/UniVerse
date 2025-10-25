@@ -72,21 +72,21 @@ export default function Navbar() {
             </AvatarFallback>
           </Avatar>
           <span className="text-sm font-medium">{user.name}</span>
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            className="text-white hover:text-[#FBF8BE] hover:bg-transparent"
-            size="sm"
-          >
-            Logout
-          </Button>
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              className="text-white hover:text-[#FBF8BE] hover:bg-transparent cursor-pointer transition-colors"
+              size="sm"
+            >
+              Logout
+            </Button>
         </div>
       ) : (
         <div className="flex items-center gap-3">
           <Link to="/login">
             <Button
               variant="ghost"
-              className="text-white hover:text-[#FBF8BE] hover:bg-transparent"
+                className="text-white hover:text-[#FBF8BE] hover:bg-transparent cursor-pointer transition-colors"
             >
               Login
             </Button>
@@ -94,7 +94,7 @@ export default function Navbar() {
           <Link to="/signup">
             <Button
               variant="secondary"
-              className="bg-[#FBF8BE] text-[#234E70] hover:bg-[#f1edaa]"
+                className="bg-[#FBF8BE] text-[#234E70] hover:bg-[#f1edaa] cursor-pointer transition-colors"
             >
               Sign Up
             </Button>

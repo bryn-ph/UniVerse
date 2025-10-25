@@ -11,7 +11,7 @@ from routes.university import university_bp
 from routes.user import user_bp
 from routes.classes import class_bp
 from flask_smorest import Api
-from routes.class_groups import groups_bp
+from routes.class_groups import class_group_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -44,7 +44,7 @@ api.register_blueprint(discussion_bp)
 api.register_blueprint(reply_bp)
 api.register_blueprint(class_bp)
 api.register_blueprint(tags_bp)
-api.register_blueprint(groups_bp)
+api.register_blueprint(class_group_bp)
 
 
 # Without this, CASCADE deletes don't work

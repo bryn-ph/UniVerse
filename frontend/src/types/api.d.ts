@@ -57,7 +57,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -125,7 +125,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -187,7 +187,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -250,7 +250,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -318,7 +318,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -380,7 +380,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -408,7 +408,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -527,7 +527,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -555,7 +555,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -600,7 +600,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -685,7 +685,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -753,7 +753,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -838,7 +838,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -906,7 +906,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -1011,6 +1011,191 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/class-groups/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all class groups */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ClassGroup"][];
+                    };
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        /** Create a new class group */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ClassGroupCreate"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ClassGroup"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/class-groups/{group_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        /** Get a class group with all its classes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ClassGroup"];
+                    };
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        /** Update a class group */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ClassGroupUpdate"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ClassGroup"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        post?: never;
+        /** Delete a class group */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/class-groups/by-class/{class_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: string;
+            };
+            cookie?: never;
+        };
+        /** Get all classes in the same group as the given class */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    class_id: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
@@ -1160,17 +1345,26 @@ export interface components {
             /** Format: uuid */
             readonly university_id?: string;
             readonly university?: string;
+            /** Format: uuid */
+            readonly class_group_id?: string;
+            readonly class_group?: string;
             readonly discussion_count?: unknown;
             readonly tags?: components["schemas"]["TagMini"][];
+            readonly group_id?: unknown;
+            readonly group_label?: unknown;
         };
         ClassCreate: {
             name: string;
             /** Format: uuid */
             university_id: string;
+            /** Format: uuid */
+            class_group_id: string;
             tag_ids?: string[];
         };
         ClassUpdate: {
             name?: string;
+            /** Format: uuid */
+            class_group_id?: string;
             tag_ids?: string[];
         };
         Tag: {
@@ -1185,6 +1379,24 @@ export interface components {
         TagUpdate: {
             name: string;
         };
+        ClassGroup: {
+            /** Format: uuid */
+            readonly id?: string;
+            name: string;
+            label?: string;
+            description?: string;
+            readonly signature?: string;
+            readonly classes?: components["schemas"]["Class"][];
+            readonly class_count?: unknown;
+        };
+        ClassGroupCreate: {
+            name: string;
+            description?: string;
+        };
+        ClassGroupUpdate: {
+            name?: string;
+            description?: string;
+        };
     };
     responses: {
         /** @description Default error response */
@@ -1196,8 +1408,8 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Unprocessable Content */
-        UNPROCESSABLE_CONTENT: {
+        /** @description Unprocessable Entity */
+        UNPROCESSABLE_ENTITY: {
             headers: {
                 [name: string]: unknown;
             };

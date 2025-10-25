@@ -30,7 +30,7 @@ def assign_class_to_group(class_obj: Class, threshold: float = 0.4):
 
     # 3) no match -> create
     label = _label_from_tokens(list(new_tokens))
-    group = ClassGroup(signature=sig, label=label)
+    group = ClassGroup(name=label, signature=sig, label=label)
     db.session.add(group)
     db.session.flush()  # get group.id
     _link(class_obj, group)
@@ -38,6 +38,10 @@ def assign_class_to_group(class_obj: Class, threshold: float = 0.4):
     return group
 
 def _link(class_obj: Class, group: ClassGroup):
+    # Set the direct foreign key
+    class_obj.class_group_id = group.id
+    
+    # Also create/update the mapping table entry
     mapping = ClassGroupMap.query.filter_by(class_id=class_obj.id).first()
     if mapping:
         mapping.group_id = group.id
