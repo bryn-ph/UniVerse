@@ -20,6 +20,7 @@ CORS(app)
 
 # Database config - MUST be set BEFORE db.init_app()
 db_path = os.path.join(os.path.dirname(__file__), "database", "universe.db")
+os.makedirs(os.path.dirname(db_path), exist_ok=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
