@@ -11,6 +11,12 @@ class_tag = db.Table(
     db.Column("tag_id",   Uuid, db.ForeignKey("tag.id", ondelete="CASCADE"),   primary_key=True),
 )
 
+user_class = db.Table(
+    "user_class",
+    db.Column("user_id", Uuid, db.ForeignKey("user.id", ondelete="CASCADE"), primary_key=True),
+    db.Column("class_id", Uuid, db.ForeignKey("classes.id", ondelete="CASCADE"), primary_key=True),
+)
+
 class User(db.Model):
     __tablename__ = "user"
 
@@ -34,6 +40,13 @@ class User(db.Model):
         "University",
         backref=db.backref("users", lazy=True),
         passive_deletes=True,
+    )
+
+    classes = db.relationship(
+        "Class",
+        secondary=user_class,
+        back_populates="enrolled_users",
+        lazy="selectin"
     )
 
     def __repr__(self):
@@ -80,6 +93,13 @@ class Class(db.Model):
         "Tag",
         secondary=class_tag,
         passive_deletes=True,
+        back_populates="classes",
+        lazy=True
+    )
+
+    enrolled_users = db.relationship(
+        "User",
+        secondary=user_class,
         back_populates="classes",
         lazy=True
     )

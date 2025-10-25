@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -14,9 +15,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import ClassManagementDialog from '@/components/ClassManagementDialog';
+import api from '@/lib/api';
+import type { components } from '@/types/api.d';
+
+type Class = components['schemas']['Class'];
+type Discussion = components['schemas']['Discussion'];
 
 export default function Profile() {
   const { user, updateUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState(user?.name || '');
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSavingName, setIsSavingName] = useState(false);
@@ -32,7 +51,71 @@ export default function Profile() {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [isSavingPassword, setIsSavingPassword] = useState(false);
 
+  // Class management state
+  const [enrolledClasses, setEnrolledClasses] = useState<Class[]>([]);
+  const [isClassDialogOpen, setIsClassDialogOpen] = useState(false);
+  const [isLoadingClasses, setIsLoadingClasses] = useState(true);
+
+  // Discussion state
+  const [userDiscussions, setUserDiscussions] = useState<Discussion[]>([]);
+  const [isLoadingDiscussions, setIsLoadingDiscussions] = useState(true);
+
   if (!user) return null;
+
+  // Fetch enrolled classes
+  useEffect(() => {
+    if (user) {
+      fetchEnrolledClasses();
+      fetchUserDiscussions();
+    }
+  }, [user]);
+
+  const fetchEnrolledClasses = async () => {
+    if (!user) return;
+
+    setIsLoadingClasses(true);
+    try {
+      const response = await api.GET('/api/users/{user_id}/classes', {
+        params: {
+          path: {
+            user_id: user.id,
+          },
+        },
+      });
+
+      if (response.data) {
+        setEnrolledClasses(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch enrolled classes:', error);
+    } finally {
+      setIsLoadingClasses(false);
+    }
+  };
+
+  const fetchUserDiscussions = async () => {
+    if (!user) return;
+
+    setIsLoadingDiscussions(true);
+    try {
+      const response = await api.GET('/api/discussions/', {
+        params: {
+          query: {
+            user_id: user.id,
+          },
+        },
+      });
+
+      if (response.data) {
+        // Show only 5 most recent discussions
+        setUserDiscussions(response.data.slice(0, 5));
+      }
+    } catch (error) {
+      console.error('Failed to fetch user discussions:', error);
+    } finally {
+      setIsLoadingDiscussions(false);
+    }
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -103,6 +186,31 @@ export default function Profile() {
     }
 
     setIsSavingPassword(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    try {
+      const response = await api.DELETE('/api/users/{user_id}', {
+        params: {
+          path: {
+            user_id: user.id,
+          },
+        },
+      });
+
+      if (response.error) {
+        console.error('Failed to delete account');
+        return;
+      }
+
+      // Logout and redirect to home
+      logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+    }
   };
 
   return (
@@ -285,18 +393,179 @@ export default function Profile() {
         </CardContent>
       </Card>
 
-      {/* Logout Card */}
+      {/* My Classes Card */}
       <Card>
-        <CardContent className="pt-6">
+        <CardHeader>
+          <CardTitle>My Classes</CardTitle>
+          <CardDescription>
+            Classes you're currently enrolled in
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isLoadingClasses ? (
+            <div className="text-center py-4 text-muted-foreground">
+              Loading classes...
+            </div>
+          ) : enrolledClasses.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-md">
+              <p>No classes enrolled yet</p>
+              <p className="text-sm mt-1">Click "Manage Classes" to get started</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {enrolledClasses.map((classItem) => (
+                <div
+                  key={classItem.id}
+                  className="p-3 border rounded-md hover:bg-muted/50"
+                >
+                  <div className="font-medium">{classItem.name}</div>
+                  {classItem.tags && classItem.tags.length > 0 && (
+                    <div className="flex gap-1 mt-2">
+                      {classItem.tags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full"
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
           <Button
-            onClick={logout}
-            variant="destructive"
+            onClick={() => setIsClassDialogOpen(true)}
+            variant="outline"
             className="w-full"
           >
-            Logout
+            Manage Classes
           </Button>
         </CardContent>
       </Card>
+
+      {/* My Discussions Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>My Discussions</CardTitle>
+          <CardDescription>
+            Recent discussions you've created
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isLoadingDiscussions ? (
+            <div className="text-center py-4 text-muted-foreground">
+              Loading discussions...
+            </div>
+          ) : userDiscussions.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-md">
+              <p>No discussions yet</p>
+              <p className="text-sm mt-1">Start a conversation in your classes!</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {userDiscussions.map((discussion) => (
+                <Link
+                  key={String(discussion.id)}
+                  to={`/discussions/${discussion.id}`}
+                  className="block no-underline text-inherit"
+                >
+                  <div className="p-4 border rounded-md hover:bg-muted/50 transition-colors">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-base mb-1">
+                          {discussion.title}
+                        </div>
+                        <div className="text-sm text-muted-foreground mb-2">
+                          {discussion.created_at
+                            ? new Intl.DateTimeFormat('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false,
+                              }).format(new Date(discussion.created_at))
+                            : 'Unknown date'}
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                          {discussion.body}
+                        </p>
+                        {discussion.class_name && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
+                            {discussion.class_name}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path d="M21 6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3v3l4-3h6a2 2 0 0 0 2-2V6z" />
+                        </svg>
+                        <span>
+                          {((discussion as any).reply_count ??
+                            (discussion.replies ? discussion.replies.length : 0))}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Delete Account Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-red-600">Danger Zone</CardTitle>
+          <CardDescription>
+            Permanently delete your account and all associated data
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full">
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete your
+                  account and remove all your data including discussions, replies,
+                  and class enrollments from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteAccount}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Yes, delete my account
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
+
+      {/* Class Management Dialog */}
+      <ClassManagementDialog
+        open={isClassDialogOpen}
+        onOpenChange={setIsClassDialogOpen}
+        onClassesUpdated={fetchEnrolledClasses}
+      />
     </div>
   );
 }

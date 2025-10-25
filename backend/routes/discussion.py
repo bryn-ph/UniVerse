@@ -11,9 +11,10 @@ discussion_bp = Blueprint("discussion", __name__, url_prefix="/api/discussions")
 @discussion_bp.arguments(DiscussionQuerySchema, location="query")
 @discussion_bp.response(200, DiscussionSchema(many=True))
 def get_discussions(query_args):
-    """Get all discussions (optionally filtered by class or university)"""
+    """Get all discussions (optionally filtered by class, university, or user)"""
     class_id = query_args.get("class_id")
     university_id = query_args.get("university_id")
+    user_id = query_args.get("user_id")
     search = query_args.get("q")
 
     q = Discussion.query.join(Discussion.user).join(Discussion.class_)
@@ -21,6 +22,8 @@ def get_discussions(query_args):
         q = q.filter(Discussion.class_id == class_id)
     if university_id:
         q = q.filter(Class.university_id == university_id)
+    if user_id:
+        q = q.filter(Discussion.user_id == user_id)
     if search:
         q = q.filter(
             or_(
