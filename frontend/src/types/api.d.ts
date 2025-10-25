@@ -180,13 +180,6 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
                 422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
