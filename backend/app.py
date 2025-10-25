@@ -5,6 +5,8 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import os
 from routes.discussion import discussion_bp
+from routes.reply import reply_bp
+from routes.university import university_bp
 
 
 
@@ -13,6 +15,8 @@ CORS(app)
 
 # Register blueprints
 app.register_blueprint(discussion_bp, url_prefix="/api")
+app.register_blueprint(reply_bp, url_prefix="/api")
+app.register_blueprint(university_bp, url_prefix="/api")
 
 
 # SQLite path
