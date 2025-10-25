@@ -7,6 +7,7 @@ interface User {
   name: string;
   email: string;
   university: string | null;
+  university_id?: string;
 }
 
 interface LoginResponse {
@@ -71,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: data.user.name,
           email: data.user.email,
           university: data.user.university,
+          university_id: (data.user as any).university_id,
         };
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));

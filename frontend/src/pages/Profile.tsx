@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -14,6 +14,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import ClassManagementDialog from '@/components/ClassManagementDialog';
+import api from '@/lib/api';
+import type { components } from '@/types/api.d';
+
+type Class = components['schemas']['Class'];
 
 export default function Profile() {
   const { user, updateUser, logout } = useAuth();
@@ -32,7 +37,42 @@ export default function Profile() {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [isSavingPassword, setIsSavingPassword] = useState(false);
 
+  // Class management state
+  const [enrolledClasses, setEnrolledClasses] = useState<Class[]>([]);
+  const [isClassDialogOpen, setIsClassDialogOpen] = useState(false);
+  const [isLoadingClasses, setIsLoadingClasses] = useState(true);
+
   if (!user) return null;
+
+  // Fetch enrolled classes
+  useEffect(() => {
+    if (user) {
+      fetchEnrolledClasses();
+    }
+  }, [user]);
+
+  const fetchEnrolledClasses = async () => {
+    if (!user) return;
+
+    setIsLoadingClasses(true);
+    try {
+      const response = await api.GET('/api/users/{user_id}/classes', {
+        params: {
+          path: {
+            user_id: user.id,
+          },
+        },
+      });
+
+      if (response.data) {
+        setEnrolledClasses(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch enrolled classes:', error);
+    } finally {
+      setIsLoadingClasses(false);
+    }
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -285,6 +325,59 @@ export default function Profile() {
         </CardContent>
       </Card>
 
+      {/* My Classes Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>My Classes</CardTitle>
+          <CardDescription>
+            Classes you're currently enrolled in
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isLoadingClasses ? (
+            <div className="text-center py-4 text-muted-foreground">
+              Loading classes...
+            </div>
+          ) : enrolledClasses.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-md">
+              <p>No classes enrolled yet</p>
+              <p className="text-sm mt-1">Click "Manage Classes" to get started</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {enrolledClasses.map((classItem) => (
+                <div
+                  key={classItem.id}
+                  className="p-3 border rounded-md hover:bg-muted/50"
+                >
+                  <div className="font-medium">{classItem.name}</div>
+                  {classItem.tags && classItem.tags.length > 0 && (
+                    <div className="flex gap-1 mt-2">
+                      {classItem.tags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full"
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <Button
+            onClick={() => setIsClassDialogOpen(true)}
+            variant="outline"
+            className="w-full"
+          >
+            Manage Classes
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Logout Card */}
       <Card>
         <CardContent className="pt-6">
@@ -297,6 +390,13 @@ export default function Profile() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Class Management Dialog */}
+      <ClassManagementDialog
+        open={isClassDialogOpen}
+        onOpenChange={setIsClassDialogOpen}
+        onClassesUpdated={fetchEnrolledClasses}
+      />
     </div>
   );
 }

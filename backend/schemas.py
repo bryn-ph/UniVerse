@@ -16,6 +16,10 @@ class UserBaseSchema(Schema):
     university_id = fields.UUID(load_only=True)
     university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True)
 
+    # Enrolled classes
+    classes = fields.Nested("ClassMiniSchema", many=True, dump_only=True)
+    class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
+
 
 class UserCreateSchema(Schema):
     name = fields.Str(required=True)
@@ -31,6 +35,14 @@ class UserLoginSchema(Schema):
 class UserUpdateSchema(Schema):
     name = fields.Str()
     password = fields.Str(load_only=True)
+
+
+class UserEnrollSchema(Schema):
+    class_id = fields.UUID(required=True)
+
+
+class UserEnrollBulkSchema(Schema):
+    class_ids = fields.List(fields.UUID(), required=True)
 
 
 # ---------- UNIVERSITY ----------
@@ -83,6 +95,7 @@ class ClassSchema(Schema):
     university_id = fields.UUID(dump_only=True)
     university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True, attribute="university")
     discussion_count = fields.Function(lambda obj: len(getattr(obj, "discussions", [])))
+    enrolled_count = fields.Function(lambda obj: len(getattr(obj, "enrolled_users", [])))
     tags = fields.Nested(TagMiniSchema, many=True, dump_only=True)
 
 

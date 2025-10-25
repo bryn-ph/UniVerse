@@ -1,7 +1,7 @@
 from flask_smorest import Blueprint
 from flask import request
-from models import db, User, University
-from schemas import UserBaseSchema, UserCreateSchema, UserLoginSchema, UserUpdateSchema
+from models import db, User, University, Class
+from schemas import UserBaseSchema, UserCreateSchema, UserLoginSchema, UserUpdateSchema, UserEnrollSchema, UserEnrollBulkSchema, ClassSchema
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
@@ -98,5 +98,76 @@ def login_user(data):
             "name": user.name,
             "email": user.email,
             "university": user.university.name if user.university else None,
+            "university_id": str(user.university_id) if user.university_id else None,
         },
     }
+
+
+# ---------- GET /users/<id>/classes ----------
+@user_bp.route("/<uuid:user_id>/classes", methods=["GET"])
+@user_bp.response(200, ClassSchema(many=True))
+def get_user_classes(user_id):
+    """Get all classes user is enrolled in"""
+    user = User.query.get_or_404(user_id)
+    return user.classes
+
+
+# ---------- POST /users/<id>/classes ----------
+@user_bp.route("/<uuid:user_id>/classes", methods=["POST"])
+@user_bp.arguments(UserEnrollSchema)
+@user_bp.response(201, ClassSchema)
+def enroll_in_class(data, user_id):
+    """Enroll user in a class"""
+    user = User.query.get_or_404(user_id)
+    class_obj = Class.query.get_or_404(data["class_id"])
+
+    # Check if already enrolled
+    if class_obj in user.classes:
+        return {"error": "Already enrolled in this class"}, 400
+
+    # Check if class belongs to user's university
+    if class_obj.university_id != user.university_id:
+        return {"error": "Can only enroll in classes from your university"}, 400
+
+    user.classes.append(class_obj)
+    db.session.commit()
+    return class_obj
+
+
+# ---------- DELETE /users/<id>/classes/<class_id> ----------
+@user_bp.route("/<uuid:user_id>/classes/<uuid:class_id>", methods=["DELETE"])
+@user_bp.response(204)
+def unenroll_from_class(user_id, class_id):
+    """Unenroll user from a class"""
+    user = User.query.get_or_404(user_id)
+    class_obj = Class.query.get_or_404(class_id)
+
+    if class_obj not in user.classes:
+        return {"error": "Not enrolled in this class"}, 400
+
+    user.classes.remove(class_obj)
+    db.session.commit()
+    return {}
+
+
+# ---------- PUT /users/<id>/classes ----------
+@user_bp.route("/<uuid:user_id>/classes", methods=["PUT"])
+@user_bp.arguments(UserEnrollBulkSchema)
+@user_bp.response(200, ClassSchema(many=True))
+def update_user_classes(data, user_id):
+    """Bulk update user's enrolled classes"""
+    user = User.query.get_or_404(user_id)
+
+    # Get all classes by IDs
+    class_ids = data["class_ids"]
+    classes = Class.query.filter(Class.id.in_(class_ids)).all()
+
+    # Validate all classes belong to user's university
+    for class_obj in classes:
+        if class_obj.university_id != user.university_id:
+            return {"error": f"Class '{class_obj.name}' is not from your university"}, 400
+
+    # Replace all enrolled classes
+    user.classes = classes
+    db.session.commit()
+    return user.classes

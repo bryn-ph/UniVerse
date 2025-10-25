@@ -180,11 +180,156 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users/{user_id}/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        /** Get all classes user is enrolled in */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Class"][];
+                    };
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        /** Bulk update user's enrolled classes */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserEnrollBulk"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Class"][];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        /** Enroll user in a class */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserEnroll"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Class"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users/{user_id}/classes/{class_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+                class_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Unenroll user from a class */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user_id: string;
+                    class_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -1044,6 +1189,11 @@ export interface components {
             previous_page?: number;
             next_page?: number;
         };
+        ClassMini: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+        };
         UserBase: {
             /** Format: uuid */
             readonly id?: string;
@@ -1055,6 +1205,8 @@ export interface components {
             /** Format: uuid */
             university_id?: string;
             readonly university?: string;
+            readonly classes?: components["schemas"]["ClassMini"][];
+            readonly class_count?: unknown;
         };
         UserCreate: {
             name: string;
@@ -1073,10 +1225,28 @@ export interface components {
             email: string;
             password: string;
         };
-        ClassMini: {
+        TagMini: {
             /** Format: uuid */
             id?: string;
             name?: string;
+        };
+        Class: {
+            /** Format: uuid */
+            readonly id?: string;
+            name: string;
+            /** Format: uuid */
+            readonly university_id?: string;
+            readonly university?: string;
+            readonly discussion_count?: unknown;
+            readonly enrolled_count?: unknown;
+            readonly tags?: components["schemas"]["TagMini"][];
+        };
+        UserEnroll: {
+            /** Format: uuid */
+            class_id: string;
+        };
+        UserEnrollBulk: {
+            class_ids: string[];
         };
         University: {
             /** Format: uuid */
@@ -1140,21 +1310,6 @@ export interface components {
         };
         ReplyUpdate: {
             body: string;
-        };
-        TagMini: {
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-        };
-        Class: {
-            /** Format: uuid */
-            readonly id?: string;
-            name: string;
-            /** Format: uuid */
-            readonly university_id?: string;
-            readonly university?: string;
-            readonly discussion_count?: unknown;
-            readonly tags?: components["schemas"]["TagMini"][];
         };
         ClassCreate: {
             name: string;
