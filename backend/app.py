@@ -5,6 +5,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import os
 from routes.discussion import discussion_bp
+from routes.tags import tags_bp
 from routes.reply import reply_bp
 from routes.university import university_bp
 from routes.user import user_bp
@@ -17,6 +18,7 @@ CORS(app)
 
 # Register blueprints
 app.register_blueprint(discussion_bp, url_prefix="/api")
+app.register_blueprint(tags_bp, url_prefix="/api")
 app.register_blueprint(reply_bp, url_prefix="/api")
 app.register_blueprint(university_bp, url_prefix="/api")
 app.register_blueprint(user_bp, url_prefix="/api")
@@ -46,6 +48,20 @@ with app.app_context():
 @app.route("/")
 def home():
     return {"message": "UniVerse API is running!"}
+
+@app.route("/api")
+def api_info():
+    return {
+        "message": "UniVerse API",
+        "version": "1.0",
+        "endpoints": {
+            "discussions": "/api/discussions",
+            "tags": "/api/tags",
+            "tag_detail": "/api/tags/<tag_id>",
+            "tag_classes": "/api/tags/<tag_id>/classes",
+            "popular_tags": "/api/tags/popular",
+        }
+    }
 
 if __name__ == "__main__":
     app.run(debug=True)
