@@ -156,7 +156,7 @@ cd frontend
 # Install npm packages
 npm install
 
-# Ensure backend api types/hooks are up to date
+# (With backend running) Ensure backend api types/hooks are up to date
 npm run generate-api
 
 # Run frontend
