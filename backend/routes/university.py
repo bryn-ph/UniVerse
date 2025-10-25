@@ -1,226 +1,71 @@
-from flask import Blueprint, request, jsonify
-from models import db, University, User, Class
-from sqlalchemy import func
+from flask_smorest import Blueprint
+from flask import request
+from models import db, University
+from schemas import UniversitySchema, ClassSchema
 import uuid
 
-university_bp = Blueprint("university", __name__)
+university_bp = Blueprint("university", __name__, url_prefix="/api/universities")
 
 # ---------- GET /universities ----------
-@university_bp.route("/universities", methods=["GET"])
+@university_bp.route("/", methods=["GET"])
+@university_bp.response(200, UniversitySchema(many=True))
 def get_universities():
-    """Get all universities"""
+    """List all universities"""
     search = request.args.get("q")
-    
     q = University.query
-    
     if search:
         q = q.filter(University.name.ilike(f"%{search}%"))
-    
-    universities = q.order_by(University.name.asc()).all()
-    
-    return jsonify([
-        {
-            "id": str(u.id),
-            "name": u.name,
-            "user_count": len(u.users),
-            "class_count": len(u.classes)
-        }
-        for u in universities
-    ])
+    return q.order_by(University.name.asc()).all()
+
 
 # ---------- GET /universities/<id> ----------
-@university_bp.route("/universities/<university_id>", methods=["GET"])
+@university_bp.route("/<uuid:university_id>", methods=["GET"])
+@university_bp.response(200, UniversitySchema)
 def get_university(university_id):
-    """Get a specific university by ID"""
-    try:
-        university = University.query.get(uuid.UUID(university_id))
-        if not university:
-            return jsonify({"error": "University not found"}), 404
-        
-        return jsonify({
-            "id": str(university.id),
-            "name": university.name,
-            "user_count": len(university.users),
-            "class_count": len(university.classes),
-            "classes": [
-                {
-                    "id": str(c.id),
-                    "name": c.name,
-                    "tag_count": len(c.tags)
-                }
-                for c in university.classes
-            ]
-        })
-    except ValueError:
-        return jsonify({"error": "Invalid UUID format"}), 400
+    """Get a university by ID"""
+    return University.query.get_or_404(university_id)
 
-# ---------- GET /universities/<id>/classes ----------
-@university_bp.route("/universities/<university_id>/classes", methods=["GET"])
-def get_university_classes(university_id):
-    """Get all classes for a specific university"""
-    try:
-        university = University.query.get(uuid.UUID(university_id))
-        if not university:
-            return jsonify({"error": "University not found"}), 404
-        
-        return jsonify([
-            {
-                "id": str(c.id),
-                "name": c.name,
-                "university_id": str(c.university_id),
-                "discussion_count": len(c.discussions),
-                "tags": [
-                    {
-                        "id": str(t.id),
-                        "name": t.name
-                    }
-                    for t in c.tags
-                ]
-            }
-            for c in university.classes
-        ])
-    except ValueError:
-        return jsonify({"error": "Invalid UUID format"}), 400
-
-# ---------- GET /universities/<id>/users ----------
-@university_bp.route("/universities/<university_id>/users", methods=["GET"])
-def get_university_users(university_id):
-    """Get all users for a specific university"""
-    try:
-        university = University.query.get(uuid.UUID(university_id))
-        if not university:
-            return jsonify({"error": "University not found"}), 404
-        
-        return jsonify([
-            {
-                "id": str(u.id),
-                "name": u.name,
-                "email": u.email,
-                "created_at": u.created_at.isoformat(),
-                "discussion_count": len(u.discussions),
-                "reply_count": len(u.replies)
-            }
-            for u in university.users
-        ])
-    except ValueError:
-        return jsonify({"error": "Invalid UUID format"}), 400
-
-# ---------- GET /universities/<id>/stats ----------
-@university_bp.route("/universities/<university_id>/stats", methods=["GET"])
-def get_university_stats(university_id):
-    """Get statistics for a specific university"""
-    try:
-        university = University.query.get(uuid.UUID(university_id))
-        if not university:
-            return jsonify({"error": "University not found"}), 404
-        
-        # Calculate total discussions across all classes
-        total_discussions = sum(len(c.discussions) for c in university.classes)
-        
-        return jsonify({
-            "id": str(university.id),
-            "name": university.name,
-            "user_count": len(university.users),
-            "class_count": len(university.classes),
-            "total_discussions": total_discussions
-        })
-    except ValueError:
-        return jsonify({"error": "Invalid UUID format"}), 400
 
 # ---------- POST /universities ----------
-@university_bp.route("/universities", methods=["POST"])
-def create_university():
+@university_bp.route("/", methods=["POST"])
+@university_bp.arguments(UniversitySchema)
+@university_bp.response(201, UniversitySchema)
+def create_university(data):
     """Create a new university"""
-    data = request.get_json()
-    
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-    
-    if "name" not in data:
-        return jsonify({"error": "Missing required field: name"}), 400
-    
-    try:
-        # Check if university with this name already exists
-        existing = University.query.filter_by(name=data["name"]).first()
-        if existing:
-            return jsonify({"error": "University with this name already exists"}), 409
-        
-        # Create university
-        university = University(name=data["name"])
-        
-        db.session.add(university)
-        db.session.commit()
-        
-        return jsonify({
-            "id": str(university.id),
-            "name": university.name,
-            "message": "University created successfully"
-        }), 201
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+    if University.query.filter_by(name=data["name"]).first():
+        return {"error": "University already exists"}, 409
+
+    uni = University(name=data["name"])
+    db.session.add(uni)
+    db.session.commit()
+    return uni
+
 
 # ---------- PUT /universities/<id> ----------
-@university_bp.route("/universities/<university_id>", methods=["PUT"])
-def update_university(university_id):
+@university_bp.route("/<uuid:university_id>", methods=["PUT"])
+@university_bp.arguments(UniversitySchema)
+@university_bp.response(200, UniversitySchema)
+def update_university(data, university_id):
     """Update a university"""
-    try:
-        university = University.query.get(uuid.UUID(university_id))
-        if not university:
-            return jsonify({"error": "University not found"}), 404
-        
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
-        
-        # Update name if provided
-        if "name" in data:
-            # Check if another university has this name
-            existing = University.query.filter(
-                University.name == data["name"],
-                University.id != uuid.UUID(university_id)
-            ).first()
-            if existing:
-                return jsonify({"error": "University with this name already exists"}), 409
-            
-            university.name = data["name"]
-        
-        db.session.commit()
-        
-        return jsonify({
-            "id": str(university.id),
-            "name": university.name,
-            "message": "University updated successfully"
-        })
-        
-    except ValueError:
-        return jsonify({"error": "Invalid UUID format"}), 400
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+    uni = University.query.get_or_404(university_id)
+    if "name" in data:
+        existing = University.query.filter(
+            University.name == data["name"],
+            University.id != university_id
+        ).first()
+        if existing:
+            return {"error": "Name already in use"}, 409
+        uni.name = data["name"]
+    db.session.commit()
+    return uni
+
 
 # ---------- DELETE /universities/<id> ----------
-@university_bp.route("/universities/<university_id>", methods=["DELETE"])
+@university_bp.route("/<uuid:university_id>", methods=["DELETE"])
+@university_bp.response(204)
 def delete_university(university_id):
-    """Delete a university (will cascade delete all related users, classes, discussions, and replies)"""
-    try:
-        university = University.query.get(uuid.UUID(university_id))
-        if not university:
-            return jsonify({"error": "University not found"}), 404
-        
-        university_name = university.name
-        
-        db.session.delete(university)
-        db.session.commit()
-        
-        return jsonify({
-            "message": f"University '{university_name}' deleted successfully"
-        }), 200
-        
-    except ValueError:
-        return jsonify({"error": "Invalid UUID format"}), 400
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
+    """Delete a university"""
+    uni = University.query.get_or_404(university_id)
+    db.session.delete(uni)
+    db.session.commit()
+    return {}
