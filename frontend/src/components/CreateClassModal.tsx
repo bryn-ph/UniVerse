@@ -3,19 +3,10 @@ import Modal from "./Modal";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import type { components } from "@/types/api.d";
 
-type University = components["schemas"]["University"];
-type ClassGroup = components["schemas"]["ClassGroup"];
 type Tag = components["schemas"]["TagMini"];
 
 interface CreateClassModalProps {
@@ -30,12 +21,8 @@ export default function CreateClassModal({
   onSuccess,
 }: CreateClassModalProps) {
   const [name, setName] = useState("");
-  const [universityId, setUniversityId] = useState("");
-  const [classGroupId, setClassGroupId] = useState("");
   const [tagIds, setTagIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [universities, setUniversities] = useState<University[]>([]);
-  const [classGroups, setClassGroups] = useState<ClassGroup[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const { user } = useAuth();
@@ -51,18 +38,6 @@ export default function CreateClassModal({
     setIsLoadingData(true);
     
     try {
-      // Fetch universities
-      const universitiesResponse = await api.GET("/api/universities/");
-      if (universitiesResponse.data) {
-        setUniversities(universitiesResponse.data);
-      }
-
-      // Fetch class groups
-      const classGroupsResponse = await api.GET("/api/class-groups/");
-      if (classGroupsResponse.data) {
-        setClassGroups(classGroupsResponse.data);
-      }
-
       // Fetch tags
       const tagsResponse = await api.GET("/api/tags/");
       if (tagsResponse.data) {
@@ -80,15 +55,14 @@ export default function CreateClassModal({
   }
 
   const handleSubmit = async () => {
-    if (!name.trim() || !universityId || !classGroupId || !user) return;
+    if (!name.trim() || !user || !user.university_id) return;
 
     setLoading(true);
     
     const { data, error } = await api.POST("/api/classes/", {
       body: { 
         name: name.trim(),
-        university_id: universityId,
-        class_group_id: classGroupId,
+        university_id: user.university_id,
         tag_ids: tagIds.length > 0 ? tagIds : undefined
       },
     });
@@ -102,8 +76,6 @@ export default function CreateClassModal({
 
     // Success - clear form and close modal
     setName("");
-    setUniversityId("");
-    setClassGroupId("");
     setTagIds([]);
     onOpenChange(false);
     onSuccess?.();
@@ -134,7 +106,7 @@ export default function CreateClassModal({
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={loading || !name.trim() || !universityId || !classGroupId || isLoadingData}
+            disabled={loading || !name.trim() || !user?.university_id || isLoadingData}
           >
             {loading ? "Creating..." : "Create Class"}
           </Button>
@@ -154,34 +126,12 @@ export default function CreateClassModal({
 
         <div className="space-y-2">
           <Label htmlFor="university">University</Label>
-          <Select value={universityId} onValueChange={setUniversityId} disabled={isLoadingData}>
-            <SelectTrigger>
-              <SelectValue placeholder={isLoadingData ? "Loading..." : "Select university"} />
-            </SelectTrigger>
-            <SelectContent>
-              {universities.map((uni) => (
-                <SelectItem key={uni.id} value={uni.id as string}>
-                  {uni.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="classGroup">Class Group</Label>
-          <Select value={classGroupId} onValueChange={setClassGroupId} disabled={isLoadingData}>
-            <SelectTrigger>
-              <SelectValue placeholder={isLoadingData ? "Loading..." : "Select class group"} />
-            </SelectTrigger>
-            <SelectContent>
-              {classGroups.map((group) => (
-                <SelectItem key={group.id} value={group.id as string}>
-                  {group.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Input
+            id="university"
+            value={user?.university || "Unknown University"}
+            disabled
+            className="bg-muted"
+          />
         </div>
 
         <div className="space-y-2">

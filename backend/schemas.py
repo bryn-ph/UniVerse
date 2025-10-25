@@ -133,13 +133,11 @@ class ClassSchema(Schema):
 class ClassCreateSchema(Schema):
     name = fields.Str(required=True)
     university_id = fields.UUID(required=True)
-    class_group_id = fields.UUID(required=True)
     tag_ids = fields.List(fields.UUID(), load_only=True)
 
 
 class ClassUpdateSchema(Schema):
     name = fields.Str()
-    class_group_id = fields.UUID()
     tag_ids = fields.List(fields.UUID())
 
 

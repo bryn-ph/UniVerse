@@ -4,6 +4,7 @@ from models import db, User
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import os
+import logging
 from routes.discussion import discussion_bp
 from routes.tags import tags_bp
 from routes.reply import reply_bp
@@ -15,6 +16,10 @@ from routes.class_groups import class_group_bp
 
 app = Flask(__name__)
 CORS(app)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Database config - MUST be set BEFORE db.init_app()
 db_path = os.path.join(os.path.dirname(__file__), "database", "universe.db")

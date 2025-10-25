@@ -3,9 +3,11 @@ import ClassGroups from "@/components/ClassGroups";
 import CreateClassModal from "@/components/CreateClassModal";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Explore() {
     const [modalOpen, setModalOpen] = useState(false);
+    const { user } = useAuth();
 
     return (
         <div className="flex flex-col items-center w-full max-w-7xl mx-auto mt-10 px-4">
@@ -24,7 +26,8 @@ export default function Explore() {
             <div className="w-full">
                 <div className="flex items-center justify-center mb-2 relative">
                     <h1 className="text-4xl font-bold">Explore Classes</h1>
-                    <Button 
+                    <Button
+                        disabled={!user}
                         onClick={() => setModalOpen(true)}
                         className="absolute right-0"
                     >
