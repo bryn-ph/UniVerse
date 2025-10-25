@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Tag from "@/components/Tag";
 import type { components } from "@/types/api.d";
@@ -62,10 +62,19 @@ export default function DiscussionCard({
           <div className="flex items-center justify-between">
             {/* Course tag / badge */}
             {discussion.class_name && (
-              <Tag 
-                tag={{ id: "class", name: discussion.class_name }} 
-                variant="muted" 
-              />
+              discussion.class_id ? (
+                <Link to={`/classes/${discussion.class_id}`} className="inline-block">
+                  <Tag 
+                    tag={{ id: "class", name: discussion.class_name }} 
+                    variant="muted" 
+                  />
+                </Link>
+              ) : (
+                <Tag 
+                  tag={{ id: "class", name: discussion.class_name }} 
+                  variant="muted" 
+                />
+              )
             )}
             
             {/* Reply count badge */}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -140,9 +140,17 @@ export default function DiscussionPage() {
               <div className="text-xs text-muted-foreground">•</div>
               <div className="text-xs text-muted-foreground">{formatDateTime(discussion.created_at)}</div>
               <div className="ml-4">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
-                  {discussion.class_name || "Unknown Class"}
-                </span>
+                {discussion.class_id ? (
+                  <Link to={`/classes/${discussion.class_id}`} className="inline-block">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground hover:underline">
+                      {discussion.class_name || "Unknown Class"}
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
+                    {discussion.class_name || "Unknown Class"}
+                  </span>
+                )}
               </div>
             </div>
           </div>
