@@ -1,7 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import universeLogo from "@/assets/universe.svg";
 
 export default function Navbar() {
   const location = useLocation();
@@ -36,9 +37,9 @@ export default function Navbar() {
             <div className="grid grid-cols-[220px_1fr_220px] items-center h-16">
               {/* Left: Logo */}
               <Link to="/" className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FBF8BE] to-[#f1edaa] flex items-center justify-center shadow-md">
-                  <span className="text-[#234E70] font-bold">U</span>
-                </div>
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={universeLogo} alt="UniVerse" />
+                </Avatar>
                 <span className="text-xl font-semibold tracking-wide text-white">UniVerse</span>
               </Link>
 

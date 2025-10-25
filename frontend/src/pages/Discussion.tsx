@@ -127,9 +127,7 @@ export default function DiscussionPage() {
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4 space-y-6">
       <div className="w-full">
-        <BackButton to={"/"} size="sm">
-          ← Back to Home
-            </BackButton>
+        <BackButton autoBack size="sm" />
       </div>
       <Card className="w-full">
         <CardHeader className="flex items-start justify-between relative">

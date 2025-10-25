@@ -9,11 +9,15 @@ type Discussion = components["schemas"]["Discussion"];
 interface DiscussionCardProps {
   discussion: Discussion;
   linkTo?: string;
+  groupId?: string;
+  groupName?: string;
 }
 
 export default function DiscussionCard({ 
   discussion, 
-  linkTo 
+  linkTo,
+  groupId,
+  groupName
 }: DiscussionCardProps) {
   const navigate = useNavigate();
   const replyCount = typeof discussion.reply_count === 'number' 
@@ -35,7 +39,15 @@ export default function DiscussionCard({
   };
 
   const handleCardClick = () => {
-    navigate(discussionLink);
+    let state;
+    if (groupId) {
+      // Coming from a class group
+      state = { from: 'group', groupId, groupName };
+    } else {
+      // Coming from home page (no groupId provided)
+      state = { from: 'home' };
+    }
+    navigate(discussionLink, { state });
   };
 
   return (

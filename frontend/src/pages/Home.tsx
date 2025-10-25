@@ -134,6 +134,8 @@ export default function Home() {
             <DiscussionCard
               key={String(post.id)}
               discussion={post}
+              groupId={undefined}
+              groupName={undefined}
             />
           ))
         )}
