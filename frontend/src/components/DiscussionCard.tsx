@@ -75,17 +75,19 @@ export default function DiscussionCard({
             {/* Course tag / badge */}
             {discussion.class_name && (
               discussion.class_id ? (
+                <Link to={`/classes/${discussion.class_id}`} state={{ from: 'home' }} className="inline-block">
+                <Tag 
+                  tag={{ id: "class", name: discussion.class_name + " (" + discussion.university + ")" }} 
+                  variant="muted" 
+                />
+                </Link>
+              ) : (
                 <Link to={`/classes/${discussion.class_id}`} className="inline-block">
                   <Tag 
-                    tag={{ id: "class", name: discussion.class_name }} 
+                    tag={{ id: "class", name: discussion.class_name + " (" + discussion.university + ")" }} 
                     variant="muted" 
                   />
                 </Link>
-              ) : (
-                <Tag 
-                  tag={{ id: "class", name: discussion.class_name }} 
-                  variant="muted" 
-                />
               )
             )}
             
