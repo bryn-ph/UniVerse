@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "generate-api": "npx openapi-typescript http://localhost:5000/openapi.json -o src/types/api.d.ts",
     "dev": "vite",
     "start-backend": "cd ../backend && flask run",
     "start-all": "concurrently \"npm run start-backend\" \"npm run dev\"",
