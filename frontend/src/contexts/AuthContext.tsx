@@ -1,11 +1,22 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import api from '@/lib/api';
 
 interface User {
   id: string;
   name: string;
   email: string;
   university: string | null;
+}
+
+interface LoginResponse {
+  message: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    university: string | null;
+  };
 }
 
 interface AuthContextType {
@@ -39,17 +50,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await fetch('http://localhost:5001/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await api.POST('/api/users/login', {
+        body: {
+          email,
+          password,
         },
-        body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      if (response.error) {
+        return {
+          success: false,
+          error: (response.error as any)?.error || 'Login failed'
+        };
+      }
 
-      if (response.ok) {
+      if (response.data) {
+        const data = response.data as unknown as LoginResponse;
         const userData = {
           id: data.user.id,
           name: data.user.name,
@@ -59,9 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
         return { success: true };
-      } else {
-        return { success: false, error: data.error || 'Login failed' };
       }
+
+      return { success: false, error: 'Login failed' };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, error: 'Network error. Please try again.' };
@@ -70,30 +86,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signup = async (name: string, email: string, password: string, universityId: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await fetch('http://localhost:5001/api/users/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await api.POST('/api/users/', {
+        body: {
+          name,
+          email,
+          password,
+          university_id: universityId,
         },
-        body: JSON.stringify({ name, email, password, university_id: universityId }),
       });
 
-      const data = await response.json();
+      if (response.error) {
+        return {
+          success: false,
+          error: (response.error as any)?.error || 'Signup failed'
+        };
+      }
 
-      if (response.ok) {
+      if (response.data) {
         // After successful signup, automatically log the user in
         const userData = {
-          id: data.id,
-          name: data.name,
-          email: data.email,
-          university: data.university,
+          id: response.data.id as string,
+          name: response.data.name,
+          email: response.data.email,
+          university: response.data.university || null,
         };
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
         return { success: true };
-      } else {
-        return { success: false, error: data.error || 'Signup failed' };
       }
+
+      return { success: false, error: 'Signup failed' };
     } catch (error) {
       console.error('Signup error:', error);
       return { success: false, error: 'Network error. Please try again.' };
@@ -107,27 +129,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateUser = async (userId: string, data: { name?: string; password?: string }): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await fetch(`http://localhost:5001/api/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await api.PUT('/api/users/{user_id}', {
+        params: {
+          path: {
+            user_id: userId,
+          },
         },
-        body: JSON.stringify(data),
+        body: data,
       });
 
-      const responseData = await response.json();
+      if (response.error) {
+        return {
+          success: false,
+          error: (response.error as any)?.error || 'Update failed'
+        };
+      }
 
-      if (response.ok) {
+      if (response.data) {
         // Update user in state and localStorage if name was changed
         if (data.name && user) {
-          const updatedUser = { ...user, name: responseData.name };
+          const updatedUser = { ...user, name: response.data.name };
           setUser(updatedUser);
           localStorage.setItem('user', JSON.stringify(updatedUser));
         }
         return { success: true };
-      } else {
-        return { success: false, error: responseData.error || 'Update failed' };
       }
+
+      return { success: false, error: 'Update failed' };
     } catch (error) {
       console.error('Update error:', error);
       return { success: false, error: 'Network error. Please try again.' };
