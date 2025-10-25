@@ -1,6 +1,6 @@
 from flask_smorest import Blueprint
 from flask import request
-from models import db, User, University, Class
+from models import db, User, University, Class, Discussion, Reply
 from schemas import UserBaseSchema, UserCreateSchema, UserLoginSchema, UserUpdateSchema, UserEnrollSchema, UserEnrollBulkSchema, ClassSchema
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
@@ -77,6 +77,14 @@ def update_user(data, user_id):
 def delete_user(user_id):
     """Delete a user"""
     user = User.query.get_or_404(user_id)
+
+    # Manually delete all user's replies first
+    Reply.query.filter_by(user_id=user_id).delete()
+
+    # Manually delete all user's discussions (this will cascade delete their replies)
+    Discussion.query.filter_by(user_id=user_id).delete()
+
+    # Now delete the user
     db.session.delete(user)
     db.session.commit()
     return {}

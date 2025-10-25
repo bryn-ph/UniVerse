@@ -175,4 +175,5 @@ class DiscussionUpdateSchema(Schema):
 class DiscussionQuerySchema(Schema):
     class_id = fields.UUID()
     university_id = fields.UUID()
+    user_id = fields.UUID()
     q = fields.Str()
