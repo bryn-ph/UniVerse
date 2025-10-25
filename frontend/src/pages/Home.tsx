@@ -7,8 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/api";
 import type { components } from "@/types/api.d";
 
@@ -16,7 +14,6 @@ import type { components } from "@/types/api.d";
 type Discussion = components["schemas"]["Discussion"];
 
 export default function Home() {
-  const [newPost, setNewPost] = useState("");
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,34 +36,6 @@ export default function Home() {
     fetchDiscussions();
   }, []);
 
-  const handlePost = async () => {
-    if (!newPost.trim()) return;
-
-    try {
-      // For now, just console.log — you’ll connect user_id/class_id later
-      console.log("Submitting post:", newPost);
-
-      // TODO: Replace placeholders once you have user + class context
-      // const response = await api.POST("/api/discussions/", {
-      //   body: {
-      //     title: "Untitled Post", // or a user input
-      //     body: newPost,
-      //     user_id: "user-uuid-here",
-      //     class_id: "class-uuid-here",
-      //   },
-      // });
-
-      // If you want instant UI update after POST:
-      // if (response.data) {
-      //   setDiscussions((prev) => [response.data, ...prev]);
-      // }
-
-      setNewPost("");
-    } catch (err) {
-      console.error("Error submitting post:", err);
-      setError("Failed to submit post");
-    }
-  };
 
   return (
     <div className="flex flex-col items-center w-full max-w-2xl mx-auto mt-10 px-4">
@@ -76,27 +45,8 @@ export default function Home() {
         Connect, share, and learn with fellow university students.
       </p>
 
-      {/* Create Post Section */}
-      <Card className="w-full mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Create a post</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Textarea
-            placeholder="What's on your mind?"
-            value={newPost}
-            onChange={(e) => setNewPost(e.target.value)}
-          />
-          <div className="flex justify-end">
-            <Button onClick={handlePost}>Post</Button>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Recent Posts Section */}
       <div className="w-full space-y-4">
-        <h2 className="text-2xl font-semibold mb-2">Recent Posts</h2>
-
         {loading ? (
           <div className="flex justify-center items-center min-h-[200px]">
             <div className="animate-pulse text-muted-foreground">
@@ -132,13 +82,13 @@ export default function Home() {
                     <CardDescription className="text-sm text-muted-foreground">
                       {post.author || "Unknown User"} • {post.created_at
                         ? new Intl.DateTimeFormat("en-GB", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          }).format(new Date(post.created_at))
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        }).format(new Date(post.created_at))
                         : "Unknown date"}
                     </CardDescription>
                   </div>
