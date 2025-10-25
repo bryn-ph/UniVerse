@@ -17,7 +17,6 @@ export default function Navbar() {
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Explore", path: "/explore" },
-    { name: "Profile", path: "/profile" },
   ];
 
   const getInitials = (name: string) => {
@@ -66,20 +65,25 @@ export default function Navbar() {
       {/* Right: User Info or Login/Signup Buttons */}
       {user ? (
         <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-[#FBF8BE] text-[#234E70] text-sm">
-              {getInitials(user.name)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium">{user.name}</span>
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              className="text-white hover:text-[#FBF8BE] hover:bg-transparent cursor-pointer transition-colors"
-              size="sm"
-            >
-              Logout
-            </Button>
+          <button
+            onClick={() => navigate('/profile')}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-[#FBF8BE] text-[#234E70] text-sm">
+                {getInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-medium">{user.name}</span>
+          </button>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="text-white hover:text-[#FBF8BE] hover:bg-transparent cursor-pointer transition-colors"
+            size="sm"
+          >
+            Logout
+          </Button>
         </div>
       ) : (
         <div className="flex items-center gap-3">
