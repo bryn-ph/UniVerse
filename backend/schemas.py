@@ -70,7 +70,7 @@ class ClassGroupSchema(Schema):
     label = fields.Str()
     description = fields.Str()
     signature = fields.Str(dump_only=True)
-    classes = fields.Nested(ClassMiniSchema, many=True, dump_only=True, attribute="classes")
+    classes = fields.Nested("ClassSchema", many=True, dump_only=True, attribute="classes")
     class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
 
 
