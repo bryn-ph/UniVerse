@@ -34,7 +34,6 @@ def assign_class_to_group(class_obj: Class, threshold: float = 0.4):
     db.session.add(group)
     db.session.flush()  # get group.id
     _link(class_obj, group)
-    db.session.commit()
     return group
 
 def _link(class_obj: Class, group: ClassGroup):
@@ -47,7 +46,7 @@ def _link(class_obj: Class, group: ClassGroup):
         mapping.group_id = group.id
     else:
         db.session.add(ClassGroupMap(class_id=class_obj.id, group_id=group.id))
-    db.session.flush()
+    db.session.commit()
 
 def _label_from_tokens(tokens: list[str]) -> str:
     words = [t for t in tokens if not t.isdigit()]

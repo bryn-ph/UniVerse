@@ -57,7 +57,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -125,7 +125,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -388,7 +388,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -456,7 +456,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -495,12 +495,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all discussions (optionally filtered by class or university) */
+        /** Get all discussions (optionally filtered by class, university, or user) */
         get: {
             parameters: {
                 query?: {
                     class_id?: string;
                     university_id?: string;
+                    user_id?: string;
                     q?: string;
                 };
                 header?: never;
@@ -518,7 +519,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -546,7 +547,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -665,7 +666,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -693,7 +694,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -738,7 +739,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -823,7 +824,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -891,7 +892,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -976,7 +977,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -1044,7 +1045,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -1422,9 +1423,14 @@ export interface components {
             /** Format: uuid */
             readonly university_id?: string;
             readonly university?: string;
+            /** Format: uuid */
+            readonly class_group_id?: string;
+            readonly class_group?: string;
             readonly discussion_count?: unknown;
             readonly enrolled_count?: unknown;
             readonly tags?: components["schemas"]["TagMini"][];
+            readonly group_id?: unknown;
+            readonly group_label?: unknown;
         };
         UserEnroll: {
             /** Format: uuid */
@@ -1500,14 +1506,10 @@ export interface components {
             name: string;
             /** Format: uuid */
             university_id: string;
-            /** Format: uuid */
-            class_group_id: string;
             tag_ids?: string[];
         };
         ClassUpdate: {
             name?: string;
-            /** Format: uuid */
-            class_group_id?: string;
             tag_ids?: string[];
         };
         Tag: {
@@ -1551,8 +1553,8 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Unprocessable Entity */
-        UNPROCESSABLE_ENTITY: {
+        /** @description Unprocessable Content */
+        UNPROCESSABLE_CONTENT: {
             headers: {
                 [name: string]: unknown;
             };
