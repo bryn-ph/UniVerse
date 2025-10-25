@@ -9,6 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 import { Textarea } from "@/components/ui/textarea";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
@@ -126,13 +127,9 @@ export default function DiscussionPage() {
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4 space-y-6">
       <div className="w-full">
-        <Button
-          variant="default"
-          onClick={() => navigate('/')}
-          className="bg-[#234E70] text-white hover:bg-[#1d3f56]"
-        >
-          ← Back
-        </Button>
+        <BackButton to={"/"} size="sm">
+          ← Back to Home
+            </BackButton>
       </div>
       <Card className="w-full">
         <CardHeader className="flex items-start justify-between relative">

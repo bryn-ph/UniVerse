@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 import ClassCard from "@/components/ClassCard";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
@@ -53,9 +53,7 @@ export default function ClassGroupDetails() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <p className="text-destructive">{error || "Class group not found"}</p>
-        <Link to="/explore">
-          <Button variant="outline">← Back to Explore</Button>
-        </Link>
+        <BackButton to="/explore" size="sm">← Back to Explore</BackButton>
       </div>
     );
   }
@@ -69,9 +67,7 @@ export default function ClassGroupDetails() {
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
       {/* Back Button */}
       <div className="w-full mb-4">
-        <Link to="/explore">
-          <Button variant="ghost" size="sm">← Back to Explore</Button>
-        </Link>
+        <BackButton to="/explore" size="sm">← Back to Explore</BackButton>
       </div>
 
       {/* Class Group Header */}

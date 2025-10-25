@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation, Link } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 import CreateDiscussionModal from "@/components/CreateDiscussionModal";
 import DiscussionCard from "@/components/DiscussionCard";
 import { TagList } from "@/components/Tag";
@@ -84,9 +85,9 @@ export default function ClassDetails() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <p className="text-destructive">{error || "Class not found"}</p>
-        <Link to={backLink}>
-          <Button variant="outline">{backText}</Button>
-        </Link>
+        <BackButton to={backLink} size="sm">
+          {backText}
+        </BackButton>
       </div>
     );
   }
@@ -107,9 +108,9 @@ export default function ClassDetails() {
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4 ">
       {/* Back Button */}
       <div className="w-full mb-4">
-        <Link to={backLink}>
-          <Button variant="ghost" size="sm">{backText}</Button>
-        </Link>
+        <BackButton to={backLink} size="sm">
+          {backText}
+        </BackButton>
       </div>
 
       {/* Class Header */}
