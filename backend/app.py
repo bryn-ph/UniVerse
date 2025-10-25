@@ -7,6 +7,7 @@ import os
 from routes.discussion import discussion_bp
 from routes.reply import reply_bp
 from routes.university import university_bp
+from routes.user import user_bp
 
 
 
@@ -17,6 +18,7 @@ CORS(app)
 app.register_blueprint(discussion_bp, url_prefix="/api")
 app.register_blueprint(reply_bp, url_prefix="/api")
 app.register_blueprint(university_bp, url_prefix="/api")
+app.register_blueprint(user_bp, url_prefix="/api")
 
 
 # SQLite path
@@ -36,7 +38,6 @@ db.init_app(app)
 
 # Create tables if they don't exist
 with app.app_context():
-    db.drop_all()
     db.create_all()
 
 # Example test route
