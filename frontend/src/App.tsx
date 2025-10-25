@@ -3,6 +3,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
+import Discussion from "./pages/Discussion";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
@@ -16,6 +17,7 @@ export default function App() {
         <main className="flex-1 p-6 bg-[#FBF8BE]/30">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/discussions/:id" element={<Discussion />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
