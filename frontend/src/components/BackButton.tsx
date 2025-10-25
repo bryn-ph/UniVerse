@@ -22,7 +22,7 @@ export default function BackButton({
 }: BackButtonProps) {
   const content = children ?? "← Back";
   // Primary uses the same blue used in other places in the app
-  const primaryClasses = "bg-[#234E70] text-white hover:bg-[#1d3f56]";
+  const primaryClasses = "bg-[#234E70] text-white hover:bg-[#1d3f56] hover:cursor-pointer";
 
   const btn = (
     <Button

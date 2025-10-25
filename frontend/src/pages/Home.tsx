@@ -75,21 +75,31 @@ export default function Home() {
 
   return (
   <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
-      {/* Header */}
-      <div className="w-full mb-3">
-        <h1 className="text-4xl font-bold mb-2 text-center">UniVerse Feed</h1>
-        <p className="text-primary/70 mb-4 text-center">
-          Connect, share, and learn with fellow university students.
-        </p>
+      {/* Hero/Header */}
+      <div className="w-full mb-6">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#234E70] via-[#1f6b8a] to-[#0ea5a4] text-white shadow-2xl p-6 sm:p-10">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex-1 text-center sm:text-left">
+              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">UniVerse Feed</h1>
+              <p className="mt-2 text-sm sm:text-lg text-white/90">Connect, share, and learn with fellow university students.</p>
+            </div>
 
-        <div className="flex items-center justify-center gap-2">
-          <Input
-            placeholder="Search discussions by title or body..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="max-w-lg w-full"
-          />
-          <Button onClick={() => setQuery("")}>Clear</Button>
+            <div className="w-full sm:w-auto">
+              <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm">
+                <Input
+                  placeholder="Search discussions by title or body..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="bg-transparent pr-2 pl-4 py-2 rounded-full w-56 sm:w-80 placeholder:text-muted-foreground text-slate-800 dark:text-slate-100"
+                />
+                <Button className="rounded-full" onClick={() => setQuery("")}>Clear</Button>
+              </div>
+              <div className="mt-2 text-xs text-white/80 text-right">Search titles and post bodies</div>
+            </div>
+          </div>
+
+          {/* decorative accent */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none" />
         </div>
       </div>
       {query && (
