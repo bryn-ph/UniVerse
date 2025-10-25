@@ -1,27 +1,48 @@
+import os
 from app import app, db
 from models import User, University, Class, Tag, Discussion, Reply
-# NEW: import for grouping + models (if you want group summary)
 from services.grouping_service import assign_class_to_group
 from models import ClassGroup, ClassGroupMap
-
-# (Optional) consistent hashing for seeded passwords
 from werkzeug.security import generate_password_hash
 
+def ensure_database_folder():
+    """Ensure the database folder exists"""
+    db_folder = os.path.join(os.path.dirname(__file__), "database")
+    
+    if not os.path.exists(db_folder):
+        os.makedirs(db_folder)
+        print(f" Created database folder at: {db_folder}")
+    else:
+        print(f" Database folder exists at: {db_folder}")
+    
+    return db_folder
 
 def clear_data():
-    print("Clearing existing data...")
+    """Clear all existing data and recreate tables"""
+    print("\n" + "="*60)
+    print("CLEARING EXISTING DATA")
+    print("="*60)
+    
     with app.app_context():
         db.drop_all()
+        print("Dropped all tables")
+        
         db.create_all()
-    print("Database cleared and tables recreated!")
+        print("Created all tables")
+    
+    print("="*60)
+
 
 
 def seed_data():
-    print("Starting to seed data...")
-
+    """Seed the database with sample data"""
+    print("\n" + "="*60)
+    print("SEEDING DATABASE")
+    print("="*60)
+    
     with app.app_context():
-        # ---------- Universities ----------
-        print("Creating universities...")
+        # Create Universities
+        print("\n Creating universities...")
         uni1 = University(name="Stanford University")
         uni2 = University(name="MIT")
         uni3 = University(name="UC Berkeley")
@@ -34,14 +55,14 @@ def seed_data():
         print("Creating users...")
         pw = generate_password_hash("password123")  # optional hashing
         users = [
-            User(name="Alice Johnson", email="alice@stanford.edu", password=pw, university_id=uni1.id),
-            User(name="Bob Smith", email="bob@stanford.edu", password=pw, university_id=uni1.id),
-            User(name="Charlie Brown", email="charlie@mit.edu", password=pw, university_id=uni2.id),
-            User(name="Diana Prince", email="diana@mit.edu", password=pw, university_id=uni2.id),
-            User(name="Eve Martinez", email="eve@berkeley.edu", password=pw, university_id=uni3.id),
-            User(name="Frank Zhang", email="frank@berkeley.edu", password=pw, university_id=uni3.id),
-            User(name="Grace Lee", email="grace@stanford.edu", password=pw, university_id=uni1.id),
-            User(name="Henry Wilson", email="henry@mit.edu", password=pw, university_id=uni2.id),
+            User(name="Alice Johnson", email="alice@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Bob Smith", email="bob@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Charlie Brown", email="charlie@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Diana Prince", email="diana@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Eve Martinez", email="eve@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Frank Zhang", email="frank@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Grace Lee", email="grace@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Henry Wilson", email="henry@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
         ]
         db.session.add_all(users)
         db.session.commit()
@@ -281,5 +302,9 @@ if __name__ == "__main__":
     if response.lower() in ["yes", "y"]:
         clear_data()
         seed_data()
+        
+        print("\n All done! Your database is ready to use.")
+        print(" Start your server with: python app.py")
+        print(" View API docs at: http://localhost:5000/swagger\n")
     else:
         print("Seeding cancelled.")
