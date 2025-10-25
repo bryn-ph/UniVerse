@@ -29,16 +29,27 @@ This makes it difficult for students from different universities to share resour
 **Technical Feasibility:**  
 Built using a modern, lightweight, and scalable stack. Initial proof of concept developed with rapid prototpying in mind, but more hardy and structured alternatives were considered for the future.
 
+**Identification of Risks:**  
+- Time constraints
+- Team Coordination
+- Scope Creep
+- Scalability
+
 **Mitigation of Risks:**  
 - Offline-safe and deployable locally (minimal dependencies).  
 - Schema-based OpenAPI definitions ensure frontend and backend consistency.  
 - Modular architecture allows future upgrades (e.g. PostgreSQL, user auth, or ML-powered grouping).  
 
-**Development Plan:**  
+**Implementation Steps :**  
 1. Establish REST API and models for users, classes, universities, discussions.  
 2. Build frontend views with auto-generated API types.  
-3. Integrate *CSE* for automatic class grouping.  
-4. Deploy with persistent database and production configuration.  
+3. Integrate *CSE* for automatic class grouping.
+4. Simple login/signup + profile management
+
+**Future Development :**  
+- Augment the CSE algorithm with ML model
+- More advanced search functionality (especially for)
+- Authentication
 
 ### **A3. Target Users (5 pts)**
 **Primary Users:**  
