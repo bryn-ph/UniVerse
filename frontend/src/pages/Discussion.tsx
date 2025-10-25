@@ -33,7 +33,7 @@ export default function DiscussionPage() {
   const discussionId = (params as { id?: string }).id ?? "";
   const navigate = useNavigate();
 
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
   const [discussion, setDiscussion] = useState<Discussion | null>(null);
   const [replies, setReplies] = useState<Reply[]>([]);
@@ -187,7 +187,9 @@ export default function DiscussionPage() {
 
         {/* Reply form */}
         <div className="mt-6">
-          {user ? (
+          {authLoading ? (
+            <div className="text-sm text-muted-foreground">Checking authentication...</div>
+          ) : user ? (
             <Card className="w-full">
               <CardContent>
                 <div className="flex items-start gap-4">
@@ -208,7 +210,16 @@ export default function DiscussionPage() {
             </Card>
           ) : (
             <Card className="w-full">
-              <CardContent className="text-sm text-muted-foreground">Please log in to reply.</CardContent>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">Please log in to reply.</div>
+                  <div>
+                    <Button variant="default" className="bg-[#234E70] text-white hover:bg-[#1d3f56]" onClick={() => navigate('/login')}>
+                      Log in
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           )}
         </div>
