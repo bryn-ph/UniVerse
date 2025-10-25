@@ -16,7 +16,7 @@ export default function App() {
     <AuthProvider>
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1 p-6 bg-[#FBF8BE]/30">
+        <main className="flex-1 p-6 bg-gray-100">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/discussions/:id" element={<Discussion />} />
