@@ -121,6 +121,11 @@ class ReplyUpdateSchema(Schema):
     body = fields.Str(required=True)
 
 
+class ReplyQuerySchema(Schema):
+    discussion_id = fields.UUID()
+    user_id = fields.UUID()
+
+
 # ---------- DISCUSSION ----------
 class DiscussionSchema(Schema):
     id = fields.UUID(dump_only=True)
@@ -148,3 +153,9 @@ class DiscussionCreateSchema(Schema):
 class DiscussionUpdateSchema(Schema):
     title = fields.Str()
     body = fields.Str()
+
+
+class DiscussionQuerySchema(Schema):
+    class_id = fields.UUID()
+    university_id = fields.UUID()
+    q = fields.Str()

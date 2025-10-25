@@ -1,18 +1,18 @@
 from flask_smorest import Blueprint
 from models import db, Reply, User, Discussion
-from schemas import ReplySchema, ReplyCreateSchema, ReplyUpdateSchema
+from schemas import ReplySchema, ReplyCreateSchema, ReplyUpdateSchema, ReplyQuerySchema
 import uuid
 
 reply_bp = Blueprint("reply", __name__, url_prefix="/api/replies")
 
 # ---------- GET /replies ----------
 @reply_bp.route("/", methods=["GET"])
+@reply_bp.arguments(ReplyQuerySchema, location="query")
 @reply_bp.response(200, ReplySchema(many=True))
-def get_replies():
+def get_replies(query_args):
     """List all replies (optionally filtered by discussion_id or user_id)"""
-    from flask import request
-    discussion_id = request.args.get("discussion_id")
-    user_id = request.args.get("user_id")
+    discussion_id = query_args.get("discussion_id")
+    user_id = query_args.get("user_id")
 
     q = Reply.query.join(Reply.user).join(Reply.discussion)
     if discussion_id:

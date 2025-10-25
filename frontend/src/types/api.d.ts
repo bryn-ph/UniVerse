@@ -353,7 +353,11 @@ export interface paths {
         /** Get all discussions (optionally filtered by class or university) */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    class_id?: string;
+                    university_id?: string;
+                    q?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -369,6 +373,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"][];
                     };
                 };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -496,7 +501,10 @@ export interface paths {
         /** List all replies (optionally filtered by discussion_id or user_id) */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    discussion_id?: string;
+                    user_id?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -512,6 +520,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"][];
                     };
                 };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
