@@ -65,7 +65,6 @@ export default function CreateClassModal({
       body: { 
         name: name.trim(),
         university_id: user.university_id,
-        class_group_id: classId,
         tag_ids: tagIds.length > 0 ? tagIds : undefined
       },
     });
@@ -80,7 +79,6 @@ export default function CreateClassModal({
     // Success - clear form and close modal
     setName("");
     setTagIds([]);
-    setClassId(null);
     onOpenChange(false);
     onSuccess?.();
   };

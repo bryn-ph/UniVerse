@@ -4,7 +4,7 @@ from models import Tag  # your Tag model
 from models import ClassGroup, ClassGroupMap
 from utils.grouping import make_signature, normalize_tokens, jaccard
 
-def assign_class_to_group(class_obj: Class, threshold: float = 0.4):
+def assign_class_to_group(class_obj: Class, threshold: float = 0.6):
     """Attach class to an existing group by signature/similarity or create a new one."""
     tag_names = [t.name for t in (class_obj.tags or [])]
     sig = make_signature(class_obj.name, tag_names)

@@ -28,7 +28,7 @@ export default function Explore() {
                                 onClick={() => setModalOpen(true)}
                                 className="ml-3 hover:cursor-pointer"
                             >
-                                + Create Class
+                                + Add University Class
                             </Button>
 
 

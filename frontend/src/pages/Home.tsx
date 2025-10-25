@@ -74,7 +74,7 @@ export default function Home() {
 
 
   return (
-  <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
+  <div className="flex flex-col items-center w-full max-w-7xl mx-auto mt-10 px-4">
       {/* Hero/Header */}
       <div className="w-full mb-6">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#234E70] via-[#1f6b8a] to-[#0ea5a4] text-white shadow-2xl p-6 sm:p-10">
