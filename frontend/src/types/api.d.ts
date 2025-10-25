@@ -1100,9 +1100,9 @@ export interface components {
             /** Format: date-time */
             readonly created_at?: string;
             /** Format: uuid */
-            discussion_id: string;
+            readonly discussion_id?: string;
             /** Format: uuid */
-            user_id: string;
+            readonly user_id?: string;
             readonly author?: string;
             readonly discussion_title?: string;
         };
@@ -1114,9 +1114,9 @@ export interface components {
             /** Format: date-time */
             readonly created_at?: string;
             /** Format: uuid */
-            user_id: string;
+            readonly user_id?: string;
             /** Format: uuid */
-            class_id: string;
+            readonly class_id?: string;
             readonly author?: string;
             readonly class_name?: string;
             readonly university?: string;
@@ -1151,7 +1151,7 @@ export interface components {
             readonly id?: string;
             name: string;
             /** Format: uuid */
-            university_id: string;
+            readonly university_id?: string;
             readonly university?: string;
             readonly discussion_count?: unknown;
             readonly tags?: components["schemas"]["TagMini"][];
