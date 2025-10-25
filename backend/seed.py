@@ -1,6 +1,8 @@
 import os
 from app import app, db
 from models import User, University, Class, Tag, Discussion, Reply
+from services.grouping_service import assign_class_to_group
+from models import ClassGroup, ClassGroupMap
 from werkzeug.security import generate_password_hash
 
 def ensure_database_folder():
@@ -9,9 +11,9 @@ def ensure_database_folder():
     
     if not os.path.exists(db_folder):
         os.makedirs(db_folder)
-        print(f"✅ Created database folder at: {db_folder}")
+        print(f" Created database folder at: {db_folder}")
     else:
-        print(f"✅ Database folder exists at: {db_folder}")
+        print(f" Database folder exists at: {db_folder}")
     
     return db_folder
 
@@ -23,12 +25,14 @@ def clear_data():
     
     with app.app_context():
         db.drop_all()
-        print("✅ Dropped all tables")
+        print("Dropped all tables")
         
         db.create_all()
-        print("✅ Created all tables")
+        print("Created all tables")
     
     print("="*60)
+
+
 
 def seed_data():
     """Seed the database with sample data"""
@@ -38,17 +42,18 @@ def seed_data():
     
     with app.app_context():
         # Create Universities
-        print("\n📚 Creating universities...")
+        print("\n Creating universities...")
         uni1 = University(name="Stanford University")
         uni2 = University(name="MIT")
         uni3 = University(name="UC Berkeley")
-        
+
         db.session.add_all([uni1, uni2, uni3])
         db.session.commit()
-        print(f"   ✅ Created {University.query.count()} universities")
-        
-        # Create Users
-        print("\n👥 Creating users...")
+        print(f"Created {University.query.count()} universities")
+
+        # ---------- Users ----------
+        print("Creating users...")
+        pw = generate_password_hash("password123")  # optional hashing
         users = [
             User(name="Alice Johnson", email="alice@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
             User(name="Bob Smith", email="bob@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
@@ -59,13 +64,12 @@ def seed_data():
             User(name="Grace Lee", email="grace@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
             User(name="Henry Wilson", email="henry@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
         ]
-        
         db.session.add_all(users)
         db.session.commit()
-        print(f"   ✅ Created {User.query.count()} users")
-        
-        # Create Tags
-        print("\n🏷️  Creating tags...")
+        print(f"Created {User.query.count()} users")
+
+        # ---------- Tags ----------
+        print("Creating tags...")
         tags = [
             Tag(name="Computer Science"),
             Tag(name="Mathematics"),
@@ -78,47 +82,51 @@ def seed_data():
             Tag(name="Machine Learning"),
             Tag(name="Data Science"),
         ]
-        
         db.session.add_all(tags)
         db.session.commit()
-        print(f"   ✅ Created {Tag.query.count()} tags")
-        
-        # Create Classes
-        print("\n📖 Creating classes...")
-        
-        # Stanford Classes
+        print(f"Created {Tag.query.count()} tags")
+
+        # ---------- Classes ----------
+        print("Creating classes...")
+
+        # Stanford
         cs101 = Class(name="Introduction to Computer Science", university_id=uni1.id)
         cs101.tags.extend([tags[0], tags[1]])  # CS, Math
-        
+
         cs229 = Class(name="Machine Learning", university_id=uni1.id)
         cs229.tags.extend([tags[0], tags[8], tags[9]])  # CS, ML, Data Science
-        
+
         math51 = Class(name="Linear Algebra", university_id=uni1.id)
         math51.tags.extend([tags[1], tags[7]])  # Math, Statistics
-        
-        # MIT Classes
+
+        # MIT
         mit_cs = Class(name="Algorithms and Data Structures", university_id=uni2.id)
         mit_cs.tags.extend([tags[0], tags[1]])
-        
+
         mit_ai = Class(name="Artificial Intelligence", university_id=uni2.id)
         mit_ai.tags.extend([tags[0], tags[8]])
-        
-        # Berkeley Classes
+
+        # Berkeley
         berkeley_ds = Class(name="Data Science Fundamentals", university_id=uni3.id)
         berkeley_ds.tags.extend([tags[0], tags[7], tags[9]])
-        
+
         berkeley_physics = Class(name="Quantum Mechanics", university_id=uni3.id)
         berkeley_physics.tags.extend([tags[2], tags[1]])
-        
+
         all_classes = [cs101, cs229, math51, mit_cs, mit_ai, berkeley_ds, berkeley_physics]
         db.session.add_all(all_classes)
         db.session.commit()
-        print(f"   ✅ Created {Class.query.count()} classes")
-        
-        # Create Discussions
-        print("\n💬 Creating discussions...")
+        print(f"Created {Class.query.count()} classes")
+
+        # ---------- HERO: Group classes across universities ----------
+        print("Assigning classes to cross-university groups…")
+        for c in Class.query.all():
+            assign_class_to_group(c)
+        print(f"Groups created: {ClassGroup.query.count()}")
+
+        # ---------- Discussions ----------
+        print("Creating discussions...")
         discussions = [
-            # CS101 discussions
             Discussion(
                 title="How do I install Python?",
                 body="I'm having trouble installing Python on my Mac. Can anyone help?",
@@ -131,8 +139,6 @@ def seed_data():
                 user_id=users[1].id,
                 class_id=cs101.id
             ),
-            
-            # CS229 discussions
             Discussion(
                 title="Gradient descent not converging",
                 body="My gradient descent implementation doesn't seem to converge. Here's my code...",
@@ -145,8 +151,6 @@ def seed_data():
                 user_id=users[0].id,
                 class_id=cs229.id
             ),
-            
-            # MIT AI discussions
             Discussion(
                 title="Midterm study group?",
                 body="Anyone want to form a study group for the upcoming midterm?",
@@ -159,8 +163,6 @@ def seed_data():
                 user_id=users[3].id,
                 class_id=mit_ai.id
             ),
-            
-            # Berkeley Data Science discussions
             Discussion(
                 title="Project partners needed",
                 body="Looking for 2 people to join my project team. DM me if interested!",
@@ -174,15 +176,13 @@ def seed_data():
                 class_id=berkeley_ds.id
             ),
         ]
-        
         db.session.add_all(discussions)
         db.session.commit()
-        print(f"   ✅ Created {Discussion.query.count()} discussions")
-        
-        # Create Replies
-        print("\n💭 Creating replies...")
+        print(f"Created {Discussion.query.count()} discussions")
+
+        # ---------- Replies ----------
+        print("Creating replies...")
         replies = [
-            # Replies to "How do I install Python?"
             Reply(
                 body="Go to python.org and download the latest version. The installer should work on Mac.",
                 user_id=users[1].id,
@@ -198,8 +198,6 @@ def seed_data():
                 user_id=users[0].id,
                 discussion_id=discussions[0].id
             ),
-            
-            # Replies to "Understanding recursion"
             Reply(
                 body="Think of it like this: a function that calls itself until it reaches a base case.",
                 user_id=users[0].id,
@@ -210,8 +208,6 @@ def seed_data():
                 user_id=users[6].id,
                 discussion_id=discussions[1].id
             ),
-            
-            # Replies to "Gradient descent not converging"
             Reply(
                 body="Try reducing your learning rate. It might be overshooting.",
                 user_id=users[0].id,
@@ -222,8 +218,6 @@ def seed_data():
                 user_id=users[1].id,
                 discussion_id=discussions[2].id
             ),
-            
-            # Replies to "Best resources for understanding neural networks?"
             Reply(
                 body="3Blue1Brown has an amazing series on neural networks on YouTube.",
                 user_id=users[1].id,
@@ -234,8 +228,6 @@ def seed_data():
                 user_id=users[6].id,
                 discussion_id=discussions[3].id
             ),
-            
-            # Replies to "Midterm study group?"
             Reply(
                 body="I'm in! When and where?",
                 user_id=users[3].id,
@@ -246,15 +238,11 @@ def seed_data():
                 user_id=users[7].id,
                 discussion_id=discussions[4].id
             ),
-            
-            # Replies to "A* search algorithm question"
             Reply(
                 body="A* is optimal when the heuristic is admissible (never overestimates).",
                 user_id=users[2].id,
                 discussion_id=discussions[5].id
             ),
-            
-            # Replies to "Project partners needed"
             Reply(
                 body="What's the project about?",
                 user_id=users[5].id,
@@ -265,8 +253,6 @@ def seed_data():
                 user_id=users[4].id,
                 discussion_id=discussions[6].id
             ),
-            
-            # Replies to "Pandas vs NumPy"
             Reply(
                 body="Use Pandas when working with tabular data (like CSV files). Use NumPy for numerical computations.",
                 user_id=users[4].id,
@@ -278,65 +264,47 @@ def seed_data():
                 discussion_id=discussions[7].id
             ),
         ]
-        
         db.session.add_all(replies)
         db.session.commit()
-        print(f"   ✅ Created {Reply.query.count()} replies")
-        
-        # Summary
-        print("\n" + "="*60)
-        print("✅ DATABASE SEEDED SUCCESSFULLY!")
-        print("="*60)
-        print("\n📊 Summary:")
-        print(f"   • {University.query.count()} universities")
-        print(f"   • {User.query.count()} users")
-        print(f"   • {Tag.query.count()} tags")
-        print(f"   • {Class.query.count()} classes")
-        print(f"   • {Discussion.query.count()} discussions")
-        print(f"   • {Reply.query.count()} replies")
-        print("="*60 + "\n")
+        print(f"Created {Reply.query.count()} replies")
 
-def check_database_location():
-    """Show where the database file is located"""
-    db_folder = os.path.join(os.path.dirname(__file__), "database")
-    db_file = os.path.join(db_folder, "universe.db")
-    
-    print("\n" + "="*60)
-    print("DATABASE INFORMATION")
-    print("="*60)
-    print(f"📁 Database folder: {db_folder}")
-    print(f"📄 Database file: {db_file}")
-    
-    if os.path.exists(db_file):
-        file_size = os.path.getsize(db_file)
-        print(f"💾 File size: {file_size:,} bytes ({file_size/1024:.2f} KB)")
-        print("✅ Database file exists")
-    else:
-        print("⚠️  Database file does not exist yet")
-    print("="*60)
+        # ---------- Group summary (nice for demo logs) ----------
+        print("\n=== Class Groups ===")
+        for g in ClassGroup.query.all():
+            maps = ClassGroupMap.query.filter_by(group_id=g.id).all()
+            class_ids = [m.class_id for m in maps]
+            members = Class.query.filter(Class.id.in_(class_ids)).all()
+            uni_counts = {}
+            for c in members:
+                uni_name = c.university.name
+                uni_counts[uni_name] = uni_counts.get(uni_name, 0) + 1
+            print(f"- {g.label or g.signature}  (members: {len(members)})  unis: {uni_counts}")
+            for c in members:
+                print(f"    • {c.name}  — {c.university.name}")
+
+        print("\n✅ Database seeded successfully!")
+        print("\nSummary:")
+        print(f"  - {University.query.count()} universities")
+        print(f"  - {User.query.count()} users")
+        print(f"  - {Tag.query.count()} tags")
+        print(f"  - {Class.query.count()} classes")
+        print(f"  - {Discussion.query.count()} discussions")
+        print(f"  - {Reply.query.count()} replies")
+
 
 if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("🌌 UNIVERSE DATABASE SEEDER 🌌")
-    print("="*60)
-    
-    # Ensure database folder exists
-    db_folder = ensure_database_folder()
-    
-    # Show current database location
-    check_database_location()
-    
-    # Ask for confirmation
-    print("\n⚠️  WARNING: This will clear all existing data!")
-    response = input("Continue? (yes/no): ")
-    
-    if response.lower() in ['yes', 'y']:
+    print("=" * 50)
+    print("UniVerse Database Seeder")
+    print("=" * 50)
+
+    response = input("\nThis will clear all existing data. Continue? (yes/no): ")
+
+    if response.lower() in ["yes", "y"]:
         clear_data()
         seed_data()
-        check_database_location()
         
-        print("\n🎉 All done! Your database is ready to use.")
-        print("💡 Start your server with: python app.py")
-        print("📚 View API docs at: http://localhost:5000/swagger\n")
+        print("\n All done! Your database is ready to use.")
+        print(" Start your server with: python app.py")
+        print(" View API docs at: http://localhost:5000/swagger\n")
     else:
-        print("\n❌ Seeding cancelled. No changes made.\n")
+        print("Seeding cancelled.")

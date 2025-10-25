@@ -97,6 +97,10 @@ class ClassSchema(Schema):
     discussion_count = fields.Function(lambda obj: len(getattr(obj, "discussions", [])))
     enrolled_count = fields.Function(lambda obj: len(getattr(obj, "enrolled_users", [])))
     tags = fields.Nested(TagMiniSchema, many=True, dump_only=True)
+    group_id = fields.Function(lambda obj: str(obj.group_map.group_id) if getattr(obj, "group_map", None) else None)
+    group_label = fields.Function(
+        lambda obj: getattr(getattr(getattr(obj, "group_map", None), "class_group", None), "label", None)
+    )
 
 
 class ClassCreateSchema(Schema):

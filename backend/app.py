@@ -11,9 +11,7 @@ from routes.university import university_bp
 from routes.user import user_bp
 from routes.classes import class_bp
 from flask_smorest import Api
-from marshmallow import ValidationError
-from flask import jsonify
-
+from routes.class_groups import groups_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -46,6 +44,8 @@ api.register_blueprint(discussion_bp)
 api.register_blueprint(reply_bp)
 api.register_blueprint(class_bp)
 api.register_blueprint(tags_bp)
+api.register_blueprint(groups_bp)
+
 
 # Without this, CASCADE deletes don't work
 @event.listens_for(Engine, "connect")

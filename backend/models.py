@@ -203,3 +203,25 @@ class Reply(db.Model):
 
     def __repr__(self):
         return f"<Reply on Discussion {self.discussion_id}>"
+
+# --- Cross-university grouping ---
+class ClassGroup(db.Model):
+    __tablename__ = "class_group"
+
+    id = db.Column(Uuid, primary_key=True, default=uuid.uuid4)
+    signature = db.Column(db.String(255), unique=True, index=True, nullable=False)
+    label = db.Column(db.String(120), nullable=True)
+
+    def __repr__(self):
+        return f"<ClassGroup {self.label or self.signature[:24]}>"
+
+class ClassGroupMap(db.Model):
+    __tablename__ = "class_group_map"
+
+    id = db.Column(Uuid, primary_key=True, default=uuid.uuid4)
+    class_id = db.Column(Uuid, db.ForeignKey("classes.id", ondelete="CASCADE"), nullable=False, unique=True)
+    group_id = db.Column(Uuid, db.ForeignKey("class_group.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    # relationships
+    class_ = db.relationship("Class", backref=db.backref("group_map", uselist=False, cascade="all, delete-orphan"))
+    class_group = db.relationship("ClassGroup", backref=db.backref("members", lazy=True, cascade="all, delete"))

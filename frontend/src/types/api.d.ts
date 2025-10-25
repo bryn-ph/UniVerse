@@ -57,7 +57,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -125,7 +125,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -388,7 +388,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -456,7 +456,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -518,7 +518,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -546,7 +546,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -665,7 +665,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -693,7 +693,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -738,7 +738,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -823,7 +823,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -891,7 +891,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -976,7 +976,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -1044,7 +1044,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -1149,6 +1149,37 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/class-groups/by-class/{class_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: string;
+            };
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    class_id: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
@@ -1344,8 +1375,8 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Unprocessable Content */
-        UNPROCESSABLE_CONTENT: {
+        /** @description Unprocessable Entity */
+        UNPROCESSABLE_ENTITY: {
             headers: {
                 [name: string]: unknown;
             };

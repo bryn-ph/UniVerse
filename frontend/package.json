@@ -6,7 +6,7 @@
   "scripts": {
     "generate-api": "npx openapi-typescript http://localhost:5001/openapi.json -o src/types/api.d.ts",
     "dev": "vite",
-    "start-backend": "cd ../backend && flask run",
+    "start-backend": "cd ../backend && flask run --port 5001",
     "start-all": "concurrently \"npm run start-backend\" \"npm run dev\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -19,6 +19,7 @@
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.16",
     "class-variance-authority": "^0.7.1",
