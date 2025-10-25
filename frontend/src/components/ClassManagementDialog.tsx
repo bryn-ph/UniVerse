@@ -154,8 +154,8 @@ export default function ClassManagementDialog({
 
         <div className="flex-1 overflow-y-auto space-y-4">
           {/* Search */}
-          <div>
-            <Label htmlFor="search">Search Classes</Label>
+          <Label htmlFor="search">Search Classes</Label>
+          <div className="mt-4">
             <Input
               id="search"
               type="text"
@@ -190,21 +190,9 @@ export default function ClassManagementDialog({
                   />
                   <Label
                     htmlFor={`class-${classItem.id}`}
-                    className="flex-1 cursor-pointer"
+                    className="flex-1 cursor-pointer font-medium"
                   >
-                    <div className="font-medium">{classItem.name}</div>
-                    {classItem.tags && classItem.tags.length > 0 && (
-                      <div className="flex gap-1 mt-1">
-                        {classItem.tags.map((tag) => (
-                          <span
-                            key={tag.id}
-                            className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full"
-                          >
-                            {tag.name}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {classItem.name}
                   </Label>
                 </div>
               ))}
