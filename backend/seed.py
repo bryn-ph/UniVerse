@@ -1,6 +1,7 @@
 import os
 from app import app, db
 from models import User, University, Class, Tag, Discussion, Reply
+from werkzeug.security import generate_password_hash
 
 def ensure_database_folder():
     """Ensure the database folder exists"""
@@ -49,14 +50,14 @@ def seed_data():
         # Create Users
         print("\n👥 Creating users...")
         users = [
-            User(name="Alice Johnson", email="alice@stanford.edu", password="password123", university_id=uni1.id),
-            User(name="Bob Smith", email="bob@stanford.edu", password="password123", university_id=uni1.id),
-            User(name="Charlie Brown", email="charlie@mit.edu", password="password123", university_id=uni2.id),
-            User(name="Diana Prince", email="diana@mit.edu", password="password123", university_id=uni2.id),
-            User(name="Eve Martinez", email="eve@berkeley.edu", password="password123", university_id=uni3.id),
-            User(name="Frank Zhang", email="frank@berkeley.edu", password="password123", university_id=uni3.id),
-            User(name="Grace Lee", email="grace@stanford.edu", password="password123", university_id=uni1.id),
-            User(name="Henry Wilson", email="henry@mit.edu", password="password123", university_id=uni2.id),
+            User(name="Alice Johnson", email="alice@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Bob Smith", email="bob@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Charlie Brown", email="charlie@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Diana Prince", email="diana@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Eve Martinez", email="eve@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Frank Zhang", email="frank@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Grace Lee", email="grace@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Henry Wilson", email="henry@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
         ]
         
         db.session.add_all(users)
