@@ -495,13 +495,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all discussions (optionally filtered by class, university, or user) */
+        /** Get all discussions (optionally filtered by class, university, user, or class group) */
         get: {
             parameters: {
                 query?: {
                     class_id?: string;
                     university_id?: string;
                     user_id?: string;
+                    class_group_id?: string;
                     q?: string;
                 };
                 header?: never;
