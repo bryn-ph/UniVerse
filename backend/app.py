@@ -11,6 +11,9 @@ from routes.university import university_bp
 from routes.user import user_bp
 from routes.classes import class_bp
 from flask_smorest import Api
+from marshmallow import ValidationError
+from flask import jsonify
+
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +32,10 @@ app.config["OPENAPI_REDOC_PATH"] = "/redoc"
 app.config["OPENAPI_REDOC_URL"] = "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"
 app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
+
+
+# Initialize db with Flask
+db.init_app(app)
 
 # Register blueprints
 api = Api(app)
@@ -52,8 +59,6 @@ def set_sqlite_pragma(dbapi_conn, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
-# Initialize db with Flask
-db.init_app(app)
 
 # Create tables if they don't exist
 with app.app_context():

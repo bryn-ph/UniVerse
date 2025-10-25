@@ -1,9 +1,7 @@
 from flask_smorest import Blueprint
 from flask import request
 from models import db, User, University
-from schemas import (
-    UserBaseSchema, UserCreateSchema, UserLoginSchema, UserUpdateSchema
-)
+from schemas import UserBaseSchema, UserCreateSchema, UserLoginSchema, UserUpdateSchema
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
@@ -13,7 +11,7 @@ user_bp = Blueprint("user", __name__, url_prefix="/api/users")
 @user_bp.route("/", methods=["GET"])
 @user_bp.response(200, UserBaseSchema(many=True))
 def get_users():
-    """List all users (optionally filtered by university or search)"""
+    """List all users (optionally filtered by university or search query)"""
     university_id = request.args.get("university_id")
     search = request.args.get("q")
 
@@ -23,20 +21,15 @@ def get_users():
     if search:
         q = q.filter(User.name.ilike(f"%{search}%"))
 
-    users = q.order_by(User.created_at.desc()).all()
-    for u in users:
-        u.university = u.university.name if u.university else None
-    return users
+    return q.order_by(User.created_at.desc()).all()
 
 
 # ---------- GET /users/<id> ----------
 @user_bp.route("/<uuid:user_id>", methods=["GET"])
 @user_bp.response(200, UserBaseSchema)
 def get_user(user_id):
-    """Get a specific user"""
-    user = User.query.get_or_404(user_id)
-    user.university = user.university.name if user.university else None
-    return user
+    """Get a single user"""
+    return User.query.get_or_404(user_id)
 
 
 # ---------- POST /users ----------
@@ -44,26 +37,23 @@ def get_user(user_id):
 @user_bp.arguments(UserCreateSchema)
 @user_bp.response(201, UserBaseSchema)
 def create_user(data):
-    """Register a new user"""
+    """Create a new user"""
     if User.query.filter_by(email=data["email"]).first():
         return {"error": "Email already registered"}, 400
 
-    uni = University.query.get(data["university_id"])
-    if not uni:
+    if not University.query.get(data["university_id"]):
         return {"error": "Invalid university_id"}, 404
 
-    new_user = User(
+    user = User(
         id=uuid.uuid4(),
         name=data["name"],
         email=data["email"],
         password=generate_password_hash(data["password"]),
         university_id=data["university_id"],
     )
-    db.session.add(new_user)
+    db.session.add(user)
     db.session.commit()
-
-    new_user.university = uni.name
-    return new_user
+    return user
 
 
 # ---------- PUT /users/<id> ----------
@@ -71,14 +61,13 @@ def create_user(data):
 @user_bp.arguments(UserUpdateSchema)
 @user_bp.response(200, UserBaseSchema)
 def update_user(data, user_id):
-    """Update a user's info"""
+    """Update user details"""
     user = User.query.get_or_404(user_id)
     if "name" in data:
         user.name = data["name"]
     if "password" in data:
         user.password = generate_password_hash(data["password"])
     db.session.commit()
-    user.university = user.university.name
     return user
 
 
