@@ -5,6 +5,7 @@ import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import api from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CreateDiscussionModalProps {
   open: boolean;
@@ -22,9 +23,13 @@ export default function CreateDiscussionModal({
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { user } = useAuth();
+  
+  if (!user) {
+    return null;
+  }
   const handleSubmit = async () => {
-    if (!title.trim() || !body.trim()) return;
+    if (!title.trim() || !body.trim() || !user) return;
 
     setLoading(true);
     
@@ -32,7 +37,7 @@ export default function CreateDiscussionModal({
       body: { 
         title, 
         body, 
-        user_id: "YOUR_USER_ID", // TODO: Replace with actual user ID
+        user_id: user.id,
         class_id: classId 
       },
     });

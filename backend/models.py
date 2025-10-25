@@ -54,6 +54,17 @@ class Class(db.Model):
     id = db.Column(Uuid, primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(100), nullable=False)
 
+    class_group_id = db.Column(
+        Uuid,
+        db.ForeignKey("class_group.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    class_group = db.relationship(
+        "ClassGroup",
+        backref=db.backref("classes", lazy=True),
+        passive_deletes=True,
+    )
+
     university_id = db.Column(
         Uuid,
         db.ForeignKey("university.id", ondelete="CASCADE"),
@@ -189,11 +200,13 @@ class ClassGroup(db.Model):
     __tablename__ = "class_group"
 
     id = db.Column(Uuid, primary_key=True, default=uuid.uuid4)
-    signature = db.Column(db.String(255), unique=True, index=True, nullable=False)
-    label = db.Column(db.String(120), nullable=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    signature = db.Column(db.String(255), nullable=False, unique=True, index=True)
+    label = db.Column(db.String(100), nullable=True)
 
     def __repr__(self):
-        return f"<ClassGroup {self.label or self.signature[:24]}>"
+        return f"<ClassGroup {self.name}>"
 
 class ClassGroupMap(db.Model):
     __tablename__ = "class_group_map"
