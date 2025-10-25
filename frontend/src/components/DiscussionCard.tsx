@@ -39,7 +39,7 @@ export default function DiscussionCard({
       aria-label={`Open discussion ${discussion.title}`}
     >
       <Card className="w-full hover:shadow-sm transition-shadow">
-        <CardHeader className="flex items-start justify-between">
+        <CardHeader>
           <div>
             <CardTitle className="text-base font-medium">{discussion.title}</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
@@ -48,45 +48,39 @@ export default function DiscussionCard({
                 : "Unknown date"}
             </CardDescription>
           </div>
-
-          {/* Reply count badge */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground pl-4">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3v3l4-3h6a2 2 0 0 0 2-2V6z"
-              />
-            </svg>
-            <span>
-              {replyCount} {replyCount === 1 ? "reply" : "replies"}
-            </span>
-          </div>
         </CardHeader>
 
         <CardContent>
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <p className="text-sm text-muted-foreground">{discussion.body}</p>
-              {/* Course tag / badge below the body */}
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">{discussion.body}</p>
+            
+            {/* Bottom row with class tag and reply count */}
+            <div className="flex items-center justify-between">
+              {/* Course tag / badge */}
               {discussion.class_name && (
-                <div className="mt-3">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
-                    {discussion.class_name}
-                  </span>
-                </div>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/40 text-muted-foreground">
+                  {discussion.class_name}
+                </span>
               )}
-            </div>
-            {/* Right-side filler reserved for future links/actions */}
-            <div className="w-16 flex-shrink-0 flex items-center justify-center">
-              <div className="h-8 w-8 rounded-md bg-muted/20 flex items-center justify-center text-muted-foreground">
-                <span className="text-xs">•••</span>
+              
+              {/* Reply count badge */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3v3l4-3h6a2 2 0 0 0 2-2V6z"
+                  />
+                </svg>
+                <span>
+                  {replyCount} {replyCount === 1 ? "reply" : "replies"}
+                </span>
               </div>
             </div>
           </div>
