@@ -3,6 +3,7 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CreateDiscussionModal from "@/components/CreateDiscussionModal";
+import DiscussionCard from "@/components/DiscussionCard";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 
@@ -170,54 +171,12 @@ export default function ClassDetails() {
             </CardContent>
           </Card>
         ) : (
-          discussions.map((discussion) => {
-            const replyCount = typeof discussion.reply_count === 'number' 
-              ? discussion.reply_count 
-              : 0;
-
-            return (
-              <Card key={discussion.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">{discussion.title}</CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {discussion.body}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-4">
-                      <span>By {discussion.author || "Unknown"}</span>
-                      {discussion.created_at && (
-                        <span>
-                          {new Date(discussion.created_at).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                        />
-                      </svg>
-                      <span>{replyCount} {replyCount === 1 ? "reply" : "replies"}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })
+          discussions.map((discussion) => (
+            <DiscussionCard
+              key={discussion.id}
+              discussion={discussion}
+            />
+          ))
         )}
       </div>
 
