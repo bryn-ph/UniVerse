@@ -1,46 +1,71 @@
+import os
 from app import app, db
 from models import User, University, Class, Tag, Discussion, Reply
+from werkzeug.security import generate_password_hash
+
+def ensure_database_folder():
+    """Ensure the database folder exists"""
+    db_folder = os.path.join(os.path.dirname(__file__), "database")
+    
+    if not os.path.exists(db_folder):
+        os.makedirs(db_folder)
+        print(f"✅ Created database folder at: {db_folder}")
+    else:
+        print(f"✅ Database folder exists at: {db_folder}")
+    
+    return db_folder
 
 def clear_data():
-    print("Clearing existing data...")
+    """Clear all existing data and recreate tables"""
+    print("\n" + "="*60)
+    print("CLEARING EXISTING DATA")
+    print("="*60)
+    
     with app.app_context():
         db.drop_all()
+        print("✅ Dropped all tables")
+        
         db.create_all()
-    print("Database cleared and tables recreated!")
+        print("✅ Created all tables")
+    
+    print("="*60)
 
 def seed_data():
-    print("Starting to seed data...")
+    """Seed the database with sample data"""
+    print("\n" + "="*60)
+    print("SEEDING DATABASE")
+    print("="*60)
     
     with app.app_context():
         # Create Universities
-        print("Creating universities...")
+        print("\n📚 Creating universities...")
         uni1 = University(name="Stanford University")
         uni2 = University(name="MIT")
         uni3 = University(name="UC Berkeley")
         
         db.session.add_all([uni1, uni2, uni3])
         db.session.commit()
-        print(f"Created {University.query.count()} universities")
+        print(f"   ✅ Created {University.query.count()} universities")
         
         # Create Users
-        print("Creating users...")
+        print("\n👥 Creating users...")
         users = [
-            User(name="Alice Johnson", email="alice@stanford.edu", password="password123", university_id=uni1.id),
-            User(name="Bob Smith", email="bob@stanford.edu", password="password123", university_id=uni1.id),
-            User(name="Charlie Brown", email="charlie@mit.edu", password="password123", university_id=uni2.id),
-            User(name="Diana Prince", email="diana@mit.edu", password="password123", university_id=uni2.id),
-            User(name="Eve Martinez", email="eve@berkeley.edu", password="password123", university_id=uni3.id),
-            User(name="Frank Zhang", email="frank@berkeley.edu", password="password123", university_id=uni3.id),
-            User(name="Grace Lee", email="grace@stanford.edu", password="password123", university_id=uni1.id),
-            User(name="Henry Wilson", email="henry@mit.edu", password="password123", university_id=uni2.id),
+            User(name="Alice Johnson", email="alice@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Bob Smith", email="bob@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Charlie Brown", email="charlie@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Diana Prince", email="diana@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
+            User(name="Eve Martinez", email="eve@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Frank Zhang", email="frank@berkeley.edu", password=generate_password_hash("password123"), university_id=uni3.id),
+            User(name="Grace Lee", email="grace@stanford.edu", password=generate_password_hash("password123"), university_id=uni1.id),
+            User(name="Henry Wilson", email="henry@mit.edu", password=generate_password_hash("password123"), university_id=uni2.id),
         ]
         
         db.session.add_all(users)
         db.session.commit()
-        print(f"Created {User.query.count()} users")
+        print(f"   ✅ Created {User.query.count()} users")
         
         # Create Tags
-        print("Creating tags...")
+        print("\n🏷️  Creating tags...")
         tags = [
             Tag(name="Computer Science"),
             Tag(name="Mathematics"),
@@ -56,10 +81,10 @@ def seed_data():
         
         db.session.add_all(tags)
         db.session.commit()
-        print(f"Created {Tag.query.count()} tags")
+        print(f"   ✅ Created {Tag.query.count()} tags")
         
         # Create Classes
-        print("Creating classes...")
+        print("\n📖 Creating classes...")
         
         # Stanford Classes
         cs101 = Class(name="Introduction to Computer Science", university_id=uni1.id)
@@ -88,10 +113,10 @@ def seed_data():
         all_classes = [cs101, cs229, math51, mit_cs, mit_ai, berkeley_ds, berkeley_physics]
         db.session.add_all(all_classes)
         db.session.commit()
-        print(f"Created {Class.query.count()} classes")
+        print(f"   ✅ Created {Class.query.count()} classes")
         
         # Create Discussions
-        print("Creating discussions...")
+        print("\n💬 Creating discussions...")
         discussions = [
             # CS101 discussions
             Discussion(
@@ -152,10 +177,10 @@ def seed_data():
         
         db.session.add_all(discussions)
         db.session.commit()
-        print(f"Created {Discussion.query.count()} discussions")
+        print(f"   ✅ Created {Discussion.query.count()} discussions")
         
         # Create Replies
-        print("Creating replies...")
+        print("\n💭 Creating replies...")
         replies = [
             # Replies to "How do I install Python?"
             Reply(
@@ -256,27 +281,62 @@ def seed_data():
         
         db.session.add_all(replies)
         db.session.commit()
-        print(f"Created {Reply.query.count()} replies")
+        print(f"   ✅ Created {Reply.query.count()} replies")
         
-        print("\n✅ Database seeded successfully!")
-        print(f"\nSummary:")
-        print(f"  - {University.query.count()} universities")
-        print(f"  - {User.query.count()} users")
-        print(f"  - {Tag.query.count()} tags")
-        print(f"  - {Class.query.count()} classes")
-        print(f"  - {Discussion.query.count()} discussions")
-        print(f"  - {Reply.query.count()} replies")
+        # Summary
+        print("\n" + "="*60)
+        print("✅ DATABASE SEEDED SUCCESSFULLY!")
+        print("="*60)
+        print("\n📊 Summary:")
+        print(f"   • {University.query.count()} universities")
+        print(f"   • {User.query.count()} users")
+        print(f"   • {Tag.query.count()} tags")
+        print(f"   • {Class.query.count()} classes")
+        print(f"   • {Discussion.query.count()} discussions")
+        print(f"   • {Reply.query.count()} replies")
+        print("="*60 + "\n")
+
+def check_database_location():
+    """Show where the database file is located"""
+    db_folder = os.path.join(os.path.dirname(__file__), "database")
+    db_file = os.path.join(db_folder, "universe.db")
+    
+    print("\n" + "="*60)
+    print("DATABASE INFORMATION")
+    print("="*60)
+    print(f"📁 Database folder: {db_folder}")
+    print(f"📄 Database file: {db_file}")
+    
+    if os.path.exists(db_file):
+        file_size = os.path.getsize(db_file)
+        print(f"💾 File size: {file_size:,} bytes ({file_size/1024:.2f} KB)")
+        print("✅ Database file exists")
+    else:
+        print("⚠️  Database file does not exist yet")
+    print("="*60)
 
 if __name__ == "__main__":
-    print("=" * 50)
-    print("UniVerse Database Seeder")
-    print("=" * 50)
+    print("\n" + "="*60)
+    print("🌌 UNIVERSE DATABASE SEEDER 🌌")
+    print("="*60)
     
-    response = input("\nThis will clear all existing data. Continue? (yes/no): ")
+    # Ensure database folder exists
+    db_folder = ensure_database_folder()
+    
+    # Show current database location
+    check_database_location()
+    
+    # Ask for confirmation
+    print("\n⚠️  WARNING: This will clear all existing data!")
+    response = input("Continue? (yes/no): ")
     
     if response.lower() in ['yes', 'y']:
         clear_data()
         seed_data()
+        check_database_location()
+        
+        print("\n🎉 All done! Your database is ready to use.")
+        print("💡 Start your server with: python app.py")
+        print("📚 View API docs at: http://localhost:5000/swagger\n")
     else:
-        print("Seeding cancelled.")
-
+        print("\n❌ Seeding cancelled. No changes made.\n")
