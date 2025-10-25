@@ -5,15 +5,14 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import os
 from routes.discussion import discussion_bp
-
-
+from routes.tags import tags_bp
 
 app = Flask(__name__)
 CORS(app)
 
 # Register blueprints
 app.register_blueprint(discussion_bp, url_prefix="/api")
-
+app.register_blueprint(tags_bp, url_prefix="/api")
 
 # SQLite path
 db_path = os.path.join(os.path.dirname(__file__), "database", "universe.db")
@@ -32,13 +31,26 @@ db.init_app(app)
 
 # Create tables if they don't exist
 with app.app_context():
-    db.drop_all()
     db.create_all()
 
 # Example test route
 @app.route("/")
 def home():
     return {"message": "UniVerse API is running!"}
+
+@app.route("/api")
+def api_info():
+    return {
+        "message": "UniVerse API",
+        "version": "1.0",
+        "endpoints": {
+            "discussions": "/api/discussions",
+            "tags": "/api/tags",
+            "tag_detail": "/api/tags/<tag_id>",
+            "tag_classes": "/api/tags/<tag_id>/classes",
+            "popular_tags": "/api/tags/popular",
+        }
+    }
 
 if __name__ == "__main__":
     app.run(debug=True)
