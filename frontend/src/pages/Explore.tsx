@@ -1,16 +1,13 @@
-import Classes from "@/components/Classes";
 import ClassGroups from "@/components/ClassGroups";
 import CreateClassModal from "@/components/CreateClassModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Explore() {
     const [modalOpen, setModalOpen] = useState(false);
     const { user } = useAuth();
-    const [query, setQuery] = useState("");
 
     return (
         <div className="flex flex-col items-center w-full max-w-7xl mx-auto mt-10 px-4">

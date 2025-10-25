@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
@@ -23,7 +23,6 @@ export default function BackButton({
   className = "",
   autoBack = false,
 }: BackButtonProps) {
-  const navigate = useNavigate();
   const location = useLocation();
   
   const getBackDestination = () => {

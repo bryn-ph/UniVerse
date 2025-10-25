@@ -61,7 +61,7 @@ export default function CreateClassModal({
 
     setLoading(true);
     
-    const { data, error } = await api.POST("/api/classes/", {
+    const { error } = await api.POST("/api/classes/", {
       body: { 
         name: name.trim(),
         university_id: user.university_id,
