@@ -87,14 +87,13 @@ export default function Home() {
             <div className="w-full sm:w-auto">
               <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm">
                 <Input
-                  placeholder="Search discussions by title or body..."
+                  placeholder="Search discussions..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="bg-transparent pr-2 pl-4 py-2 rounded-full w-56 sm:w-80 placeholder:text-muted-foreground text-slate-800 dark:text-slate-100"
                 />
                 <Button className="rounded-full" onClick={() => setQuery("")}>Clear</Button>
               </div>
-              <div className="mt-2 text-xs text-white/80 text-right">Search titles and post bodies</div>
             </div>
           </div>
 
