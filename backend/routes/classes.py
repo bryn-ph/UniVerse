@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, abort
 from flask_smorest import Blueprint
 from models import db, Class, University, Tag
 from schemas import ClassSchema, ClassCreateSchema, ClassUpdateSchema
@@ -49,14 +49,18 @@ def create_class(data):
     """Create a new class"""
     uni = University.query.get(data["university_id"])
     if not uni:
-        class_bp.abort(404, message="University not found")
+        abort(404, description="University not found")
 
     existing = Class.query.filter_by(
         name=data["name"], 
         university_id=data["university_id"]
     ).first()
+    print(f"Looking for class: name='{data['name']}', university_id='{data['university_id']}'")
+    print(f"Found existing class: {existing}")
+
     if existing:
-        class_bp.abort(400, message="A class with this name already exists in the university")
+        print(f"Existing class details: id={existing.id}, name={existing.name}, university_id={existing.university_id}")
+        abort(400, description="A class with this name already exists in the university")
 
     new_class = Class(
         id=uuid.uuid4(),

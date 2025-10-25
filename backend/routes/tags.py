@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, abort
 from flask_smorest import Blueprint
 from models import db, Tag, Class
 from schemas import TagSchema, TagCreateSchema, TagUpdateSchema
@@ -57,7 +57,7 @@ def create_tag(data):
         func.lower(Tag.name) == func.lower(data["name"])
     ).first()
     if existing_tag:
-        tags_bp.abort(409, message="Tag already exists")
+        abort(409, description="Tag already exists")
     
     # Create new tag
     new_tag = Tag(name=data["name"].strip())
@@ -81,7 +81,7 @@ def update_tag(data, tag_id):
     ).first()
     
     if existing_tag:
-        tags_bp.abort(409, message="A tag with this name already exists")
+        abort(409, description="A tag with this name already exists")
     
     tag.name = data["name"].strip()
     db.session.commit()

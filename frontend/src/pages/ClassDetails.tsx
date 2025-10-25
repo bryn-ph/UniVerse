@@ -8,7 +8,8 @@ import DiscussionCard from "@/components/DiscussionCard";
 import { TagList } from "@/components/Tag";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
-
+import { useAuth } from "@/contexts/AuthContext";
+1
 type Class = components["schemas"]["Class"];
 type Discussion = components["schemas"]["Discussion"];
 
@@ -20,7 +21,7 @@ export default function ClassDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
+  const { user } = useAuth();
   // Get navigation state (if coming from a class group)
   const state = location.state as { from?: string; groupId?: string; groupName?: string } | null;
 
@@ -150,7 +151,7 @@ export default function ClassDetails() {
       {/* Create Discussion Button */}
       <div className="w-full mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Discussions</h2>
-        <Button onClick={() => setModalOpen(true)}>+ New Discussion</Button>
+        <Button disabled={!user} onClick={() => setModalOpen(true)}>+ New Discussion</Button>
       </div>
 
       {/* Discussions List */}
