@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all users (optionally filtered by university or search) */
+        /** List all users (optionally filtered by university or search query) */
         get: {
             parameters: {
                 query?: never;
@@ -34,7 +34,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Register a new user */
+        /** Create a new user */
         post: {
             parameters: {
                 query?: never;
@@ -57,7 +57,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -76,7 +76,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** Get a specific user */
+        /** Get a single user */
         get: {
             parameters: {
                 query?: never;
@@ -100,7 +100,7 @@ export interface paths {
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
-        /** Update a user's info */
+        /** Update user details */
         put: {
             parameters: {
                 query?: never;
@@ -125,7 +125,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -180,7 +180,7 @@ export interface paths {
                 };
             };
             responses: {
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -230,7 +230,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["University"];
+                    "application/json": components["schemas"]["UniversityCreate"];
                 };
             };
             responses: {
@@ -243,7 +243,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -262,7 +262,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** Get a specific university */
+        /** Get a university by ID */
         get: {
             parameters: {
                 query?: never;
@@ -286,7 +286,35 @@ export interface paths {
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
-        put?: never;
+        /** Update a university */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    university_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UniversityUpdate"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["University"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
         post?: never;
         /** Delete a university */
         delete: {
@@ -322,7 +350,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all discussions (optionally filtered by class or university). */
+        /** Get all discussions (optionally filtered by class or university) */
         get: {
             parameters: {
                 query?: never;
@@ -345,7 +373,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a new discussion. */
+        /** Create a new discussion */
         post: {
             parameters: {
                 query?: never;
@@ -355,7 +383,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["Discussion"];
+                    "application/json": components["schemas"]["DiscussionCreate"];
                 };
             };
             responses: {
@@ -368,7 +396,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -387,7 +415,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** Get a single discussion and its replies. */
+        /** Get a discussion by ID */
         get: {
             parameters: {
                 query?: never;
@@ -428,10 +456,8 @@ export interface paths {
             };
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Add a reply to a discussion. */
-        post: {
+        /** Get replies for a discussion (redirect to /api/replies?discussion_id=<id>) */
+        get: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -440,25 +466,20 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Reply"];
-                };
-            };
+            requestBody?: never;
             responses: {
-                /** @description Created */
-                201: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["Reply"];
-                    };
+                    content?: never;
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -472,7 +493,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all replies (filterable by discussion_id or user_id) */
+        /** List all replies (optionally filtered by discussion_id or user_id) */
         get: {
             parameters: {
                 query?: never;
@@ -495,7 +516,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a reply */
+        /** Create a new reply */
         post: {
             parameters: {
                 query?: never;
@@ -505,7 +526,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["Reply"];
+                    "application/json": components["schemas"]["ReplyCreate"];
                 };
             };
             responses: {
@@ -518,7 +539,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -538,7 +559,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update a reply body */
+        /** Update reply body */
         put: {
             parameters: {
                 query?: never;
@@ -550,7 +571,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["Reply1"];
+                    "application/json": components["schemas"]["ReplyUpdate"];
                 };
             };
             responses: {
@@ -563,7 +584,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -590,6 +611,400 @@ export interface paths {
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/classes/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all classes (optionally filtered by university or tag) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Class"][];
+                    };
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        /** Create a new class */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ClassCreate"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Class"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/classes/{class_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: string;
+            };
+            cookie?: never;
+        };
+        /** Get details of a single class */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    class_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Class"];
+                    };
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        /** Update class name or tags */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    class_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ClassUpdate"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Class"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        post?: never;
+        /** Delete a class */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    class_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tags/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all tags with optional filtering and statistics */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Tag"][];
+                    };
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        /** Create a new tag */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TagCreate"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Tag"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tags/{tag_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tag_id: string;
+            };
+            cookie?: never;
+        };
+        /** Get a specific tag with all its associated classes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    tag_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Tag"];
+                    };
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        /** Update a tag's name */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    tag_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TagUpdate"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Tag"];
+                    };
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        post?: never;
+        /** Delete a tag (this will also remove it from all associated classes) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    tag_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tags/{tag_id}/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tag_id: string;
+            };
+            cookie?: never;
+        };
+        /** Get all classes associated with a specific tag */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    tag_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tags/popular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get most popular tags by usage count */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tags/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get overall tag statistics */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                default: components["responses"]["DEFAULT_ERROR"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -626,11 +1041,11 @@ export interface components {
             name: string;
             /** Format: email */
             email: string;
-            /** Format: uuid */
-            university_id: string;
-            readonly university?: string;
             /** Format: date-time */
             readonly created_at?: string;
+            /** Format: uuid */
+            university_id?: string;
+            readonly university?: string;
         };
         UserCreate: {
             name: string;
@@ -649,12 +1064,25 @@ export interface components {
             email: string;
             password: string;
         };
+        ClassMini: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+        };
         University: {
             /** Format: uuid */
             readonly id?: string;
             name: string;
-            readonly user_count?: number;
-            readonly class_count?: number;
+            readonly users?: components["schemas"]["UserBase"][];
+            readonly classes?: components["schemas"]["ClassMini"][];
+            readonly user_count?: unknown;
+            readonly class_count?: unknown;
+        };
+        UniversityCreate: {
+            name: string;
+        };
+        UniversityUpdate: {
+            name: string;
         };
         Reply: {
             /** Format: uuid */
@@ -662,11 +1090,12 @@ export interface components {
             body: string;
             /** Format: date-time */
             readonly created_at?: string;
-            readonly author?: string;
-            /** Format: uuid */
-            readonly author_id?: string;
             /** Format: uuid */
             discussion_id: string;
+            /** Format: uuid */
+            user_id: string;
+            readonly author?: string;
+            readonly discussion_title?: string;
         };
         Discussion: {
             /** Format: uuid */
@@ -675,27 +1104,70 @@ export interface components {
             body: string;
             /** Format: date-time */
             readonly created_at?: string;
-            readonly author?: string;
-            readonly university?: string;
-            readonly class_name?: string;
-            readonly reply_count?: number;
             /** Format: uuid */
             user_id: string;
             /** Format: uuid */
             class_id: string;
+            readonly author?: string;
+            readonly class_name?: string;
+            readonly university?: string;
             readonly replies?: components["schemas"]["Reply"][];
+            readonly reply_count?: unknown;
         };
-        Reply1: {
+        DiscussionCreate: {
+            title: string;
+            body: string;
+            /** Format: uuid */
+            user_id: string;
+            /** Format: uuid */
+            class_id: string;
+        };
+        ReplyCreate: {
+            body: string;
+            /** Format: uuid */
+            user_id: string;
+            /** Format: uuid */
+            discussion_id: string;
+        };
+        ReplyUpdate: {
+            body: string;
+        };
+        TagMini: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+        };
+        Class: {
             /** Format: uuid */
             readonly id?: string;
-            body?: string;
-            /** Format: date-time */
-            readonly created_at?: string;
-            readonly author?: string;
+            name: string;
             /** Format: uuid */
-            readonly author_id?: string;
+            university_id: string;
+            readonly university?: string;
+            readonly discussion_count?: unknown;
+            readonly tags?: components["schemas"]["TagMini"][];
+        };
+        ClassCreate: {
+            name: string;
             /** Format: uuid */
-            discussion_id?: string;
+            university_id: string;
+            tag_ids?: string[];
+        };
+        ClassUpdate: {
+            name?: string;
+            tag_ids?: string[];
+        };
+        Tag: {
+            /** Format: uuid */
+            readonly id?: string;
+            name: string;
+            readonly class_count?: unknown;
+        };
+        TagCreate: {
+            name: string;
+        };
+        TagUpdate: {
+            name: string;
         };
     };
     responses: {
@@ -708,8 +1180,8 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Unprocessable Entity */
-        UNPROCESSABLE_ENTITY: {
+        /** @description Unprocessable Content */
+        UNPROCESSABLE_CONTENT: {
             headers: {
                 [name: string]: unknown;
             };
