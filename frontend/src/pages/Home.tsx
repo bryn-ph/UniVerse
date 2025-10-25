@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import DiscussionCard from "@/components/DiscussionCard";
 import api from "@/lib/api";
-import ShareMenu from "@/components/ShareMenu";
 import type { components } from "@/types/api.d";
 
 // Infer Discussion type from your OpenAPI schema
@@ -12,10 +11,7 @@ export default function Home() {
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-  // Share handled by reusable ShareMenu component
-
+  
   // Fetch discussions from backend
   useEffect(() => {
     const fetchDiscussions = async () => {
