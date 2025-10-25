@@ -24,10 +24,11 @@ export default function CreateDiscussionModal({
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
-  
+
   if (!user) {
     return null;
   }
+
   const handleSubmit = async () => {
     if (!title.trim() || !body.trim() || !user) return;
 
