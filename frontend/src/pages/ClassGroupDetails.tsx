@@ -76,7 +76,7 @@ export default function ClassGroupDetails() {
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
       {/* Back Button */}
       <div className="w-full mb-4">
-        <BackButton to="/explore" size="sm">← Back to Explore</BackButton>
+        <BackButton autoBack size="sm" />
       </div>
 
       {/* Class Group Header */}
@@ -142,6 +142,8 @@ export default function ClassGroupDetails() {
             <DiscussionCard
               key={discussion.id}
               discussion={discussion}
+              groupId={groupId}
+              groupName={groupData.name}
             />
           ))
         )}

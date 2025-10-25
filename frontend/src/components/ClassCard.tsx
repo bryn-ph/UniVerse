@@ -31,7 +31,20 @@ export default function ClassCard({
   const navigate = useNavigate();
   const classLink = linkTo || `/classes/${id}`;
   const handleCardClick = () => {
-    navigate(classLink);
+    // Determine navigation state based on the link destination
+    let state;
+    if (linkTo?.includes('/class-groups/')) {
+      // Navigating to a class group - always comes from explore
+      state = { from: 'explore' };
+    } else if (linkTo?.includes('/classes/')) {
+      // Navigating to a class - check if we have group context
+      state = { from: 'class' };
+    } else {
+      // Default state
+      state = { from: 'class' };
+    }
+    
+    navigate(classLink, { state });
   };
   return (
     <Card
