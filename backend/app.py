@@ -4,9 +4,16 @@ from models import db, User
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import os
+from routes.discussion import discussion_bp
+
+
 
 app = Flask(__name__)
 CORS(app)
+
+# Register blueprints
+app.register_blueprint(discussion_bp, url_prefix="/api")
+
 
 # SQLite path
 db_path = os.path.join(os.path.dirname(__file__), "database", "universe.db")
