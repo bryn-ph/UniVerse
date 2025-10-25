@@ -80,7 +80,7 @@ integration with other components.
 
     ### Justification:
 
-    **Class-Signature-Engine Algorithm (CSE):** the bulk of our logic for this engine is located in the `group_classes_by_signature()` function. The algorithm runs in *O(n²)* pairwise comparisons but scales efficiently for particularly smaller datasets.
+    **Class-Signature-Engine Algorithm (CSE):** The CSE automatically detects when classes from different universities are essentially the same subject and groups them together — without any manual input. The bulk of our logic for this engine is located in the `group_classes_by_signature()` function. The algorithm runs in *O(n²)* pairwise comparisons but scales efficiently for particularly smaller datasets.
 
     **Integration & Maintainability:** The function ties directly into the class creation route, automatically re-grouping classes in real-time without user input. This improves project utility significantly, as time goes on. 
 

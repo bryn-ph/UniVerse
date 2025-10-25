@@ -129,15 +129,6 @@ export default function CreateClassModal({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="className">Class</Label>
-          <Input
-            id="className"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="university">University</Label>
           <Input
             id="university"
