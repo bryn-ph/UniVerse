@@ -10,7 +10,7 @@ class UserBaseSchema(Schema):
     id = fields.UUID(dump_only=True)
     name = fields.Str(required=True)
     email = fields.Email(required=True)
-    created_at = fields.DateTime(dump_only=True)
+    created_at = fields.DateTime(format=dump_only=True)
 
     # direct FK for input, pluck for output
     university_id = fields.UUID(load_only=True)
