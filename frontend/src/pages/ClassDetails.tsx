@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import CreateDiscussionModal from "@/components/CreateDiscussionModal";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 
@@ -14,6 +15,7 @@ export default function ClassDetails() {
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -137,7 +139,7 @@ export default function ClassDetails() {
       {/* Create Discussion Button */}
       <div className="w-full mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Discussions</h2>
-        <Button>+ New Discussion</Button>
+        <Button onClick={() => setModalOpen(true)}>+ New Discussion</Button>
       </div>
 
       {/* Discussions List */}
@@ -199,6 +201,19 @@ export default function ClassDetails() {
           })
         )}
       </div>
+
+      {/* Create Discussion Modal */}
+      {classId && (
+        <CreateDiscussionModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          classId={classId}
+          onSuccess={() => {
+            // Refetch discussions after creation
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 }
