@@ -1,7 +1,7 @@
 from flask_smorest import Blueprint
 from flask import request
 from models import db, University
-from schemas import UniversitySchema, ClassSchema
+from schemas import UniversitySchema, UniversityCreateSchema, UniversityUpdateSchema, ClassSchema
 import uuid
 
 university_bp = Blueprint("university", __name__, url_prefix="/api/universities")
@@ -28,7 +28,7 @@ def get_university(university_id):
 
 # ---------- POST /universities ----------
 @university_bp.route("/", methods=["POST"])
-@university_bp.arguments(UniversitySchema)
+@university_bp.arguments(UniversityCreateSchema)
 @university_bp.response(201, UniversitySchema)
 def create_university(data):
     """Create a new university"""
@@ -43,7 +43,7 @@ def create_university(data):
 
 # ---------- PUT /universities/<id> ----------
 @university_bp.route("/<uuid:university_id>", methods=["PUT"])
-@university_bp.arguments(UniversitySchema)
+@university_bp.arguments(UniversityUpdateSchema)
 @university_bp.response(200, UniversitySchema)
 def update_university(data, university_id):
     """Update a university"""

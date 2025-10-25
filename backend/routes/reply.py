@@ -1,6 +1,6 @@
 from flask_smorest import Blueprint
 from models import db, Reply, User, Discussion
-from schemas import ReplySchema
+from schemas import ReplySchema, ReplyCreateSchema, ReplyUpdateSchema
 import uuid
 
 reply_bp = Blueprint("reply", __name__, url_prefix="/api/replies")
@@ -25,7 +25,7 @@ def get_replies():
 
 # ---------- POST /replies ----------
 @reply_bp.route("/", methods=["POST"])
-@reply_bp.arguments(ReplySchema)
+@reply_bp.arguments(ReplyCreateSchema)
 @reply_bp.response(201, ReplySchema)
 def create_reply(data):
     """Create a new reply"""
@@ -47,7 +47,7 @@ def create_reply(data):
 
 # ---------- PUT /replies/<id> ----------
 @reply_bp.route("/<uuid:reply_id>", methods=["PUT"])
-@reply_bp.arguments(ReplySchema(partial=True))
+@reply_bp.arguments(ReplyUpdateSchema)
 @reply_bp.response(200, ReplySchema)
 def update_reply(data, reply_id):
     """Update reply body"""

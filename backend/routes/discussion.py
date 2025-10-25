@@ -1,7 +1,7 @@
 from flask_smorest import Blueprint
 from flask import request
 from models import db, Discussion, Class
-from schemas import DiscussionSchema
+from schemas import DiscussionSchema, DiscussionCreateSchema, DiscussionUpdateSchema
 from sqlalchemy import or_
 import uuid
 
@@ -34,7 +34,7 @@ def get_discussions():
 
 # ---------- POST /discussions ----------
 @discussion_bp.route("/", methods=["POST"])
-@discussion_bp.arguments(DiscussionSchema)
+@discussion_bp.arguments(DiscussionCreateSchema)
 @discussion_bp.response(201, DiscussionSchema)
 def create_discussion(data):
     """Create a new discussion"""
@@ -58,10 +58,9 @@ def get_discussion(discussion_id):
     return Discussion.query.get_or_404(discussion_id)
 
 
-# ---------- POST /discussions/<id>/replies ----------
-@discussion_bp.route("/<uuid:discussion_id>/replies", methods=["POST"])
-@discussion_bp.arguments(DiscussionSchema)
-@discussion_bp.response(201, DiscussionSchema)
-def add_reply(data, discussion_id):
-    """(Handled in reply routes; left for structure)"""
-    return {"message": "Replies are handled in /api/replies."}
+# ---------- GET /discussions/<id>/replies ----------
+@discussion_bp.route("/<uuid:discussion_id>/replies", methods=["GET"])
+@discussion_bp.response(200)
+def get_discussion_replies(discussion_id):
+    """Get replies for a discussion (redirect to /api/replies?discussion_id=<id>)"""
+    return {"message": "Use GET /api/replies?discussion_id={} to get replies".format(discussion_id)}

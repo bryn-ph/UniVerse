@@ -50,13 +50,51 @@ class UniversitySchema(Schema):
     class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
 
 
+class UniversityCreateSchema(Schema):
+    name = fields.Str(required=True)
+
+
+class UniversityUpdateSchema(Schema):
+    name = fields.Str(required=True)
+
+
+class TagMiniSchema(Schema):
+    id = fields.UUID()
+    name = fields.Str()
+
+
+class TagSchema(Schema):
+    id = fields.UUID(dump_only=True)
+    name = fields.Str(required=True)
+    class_count = fields.Function(lambda obj: len(getattr(obj, "classes", [])))
+
+
+class TagCreateSchema(Schema):
+    name = fields.Str(required=True)
+
+
+class TagUpdateSchema(Schema):
+    name = fields.Str(required=True)
+
+
 class ClassSchema(Schema):
     id = fields.UUID(dump_only=True)
     name = fields.Str(required=True)
-    university_id = fields.UUID(required=True)
+    university_id = fields.UUID(required=True, load_only=True)
     university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True)
     discussion_count = fields.Function(lambda obj: len(getattr(obj, "discussions", [])))
-    tags = fields.List(fields.Str(), dump_only=True)
+    tags = fields.Nested(TagMiniSchema, many=True, dump_only=True)
+
+
+class ClassCreateSchema(Schema):
+    name = fields.Str(required=True)
+    university_id = fields.UUID(required=True)
+    tag_ids = fields.List(fields.UUID(), load_only=True)
+
+
+class ClassUpdateSchema(Schema):
+    name = fields.Str()
+    tag_ids = fields.List(fields.UUID())
 
 
 # ---------- REPLY ----------
@@ -71,6 +109,16 @@ class ReplySchema(Schema):
     # Related / derived info
     author = fields.Pluck(UserBaseSchema, "name", dump_only=True)
     discussion_title = fields.Pluck("DiscussionSchema", "title", dump_only=True)
+
+
+class ReplyCreateSchema(Schema):
+    body = fields.Str(required=True)
+    user_id = fields.UUID(required=True)
+    discussion_id = fields.UUID(required=True)
+
+
+class ReplyUpdateSchema(Schema):
+    body = fields.Str(required=True)
 
 
 # ---------- DISCUSSION ----------
@@ -88,3 +136,15 @@ class DiscussionSchema(Schema):
     university = fields.Pluck(UniversityMiniSchema, "name", dump_only=True, attribute="class_.university")
     replies = fields.Nested(ReplySchema, many=True, dump_only=True)
     reply_count = fields.Function(lambda obj: len(getattr(obj, "replies", [])))
+
+
+class DiscussionCreateSchema(Schema):
+    title = fields.Str(required=True)
+    body = fields.Str(required=True)
+    user_id = fields.UUID(required=True)
+    class_id = fields.UUID(required=True)
+
+
+class DiscussionUpdateSchema(Schema):
+    title = fields.Str()
+    body = fields.Str()
