@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { components } from "@/types/api.d";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import ShareMenu from "@/components/ShareMenu";
 
 type Discussion = components["schemas"]["Discussion"];
 type Reply = components["schemas"]["Reply"];
@@ -39,6 +40,8 @@ export default function DiscussionPage() {
   const [replies, setReplies] = useState<Reply[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // copy feedback handled by ShareMenu component
 
   const [replyText, setReplyText] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -74,6 +77,8 @@ export default function DiscussionPage() {
 
     fetchData();
   }, [discussionId]);
+
+  // Copy handled by ShareMenu component
 
   const handleReplySubmit = async () => {
     if (!user) return setError("You must be logged in to reply.");
@@ -130,7 +135,7 @@ export default function DiscussionPage() {
         </Button>
       </div>
       <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="flex items-start justify-between relative">
           <div className="space-y-2">
             <CardTitle className="text-3xl">{discussion.title}</CardTitle>
             <div className="flex items-center gap-3">
@@ -143,6 +148,11 @@ export default function DiscussionPage() {
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* Top-right actions (three dots) */}
+          <div className="relative">
+            <ShareMenu path={`/discussions/${discussionId}`} />
           </div>
         </CardHeader>
         <CardContent>

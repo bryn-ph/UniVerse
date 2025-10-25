@@ -8,6 +8,8 @@ import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import ClassDetails from "./pages/ClassDetails";
+import ClassGroupDetails from "./pages/ClassGroupDetails";
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/discussions/:id" element={<Discussion />} />
             <Route path="/explore" element={<Explore />} />
+            <Route path="/classes/:classId" element={<ClassDetails />} />
+            <Route path="/class-groups/:groupId" element={<ClassGroupDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route
