@@ -102,7 +102,7 @@ export default function ClassDetails() {
     : "← Back to Explore";
 
   return (
-    <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4">
+    <div className="flex flex-col items-center w-full max-w-5xl mx-auto mt-10 px-4 ">
       {/* Back Button */}
       <div className="w-full mb-4">
         <Link to={backLink}>
