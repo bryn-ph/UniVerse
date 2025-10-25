@@ -57,7 +57,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -125,7 +125,7 @@ export interface paths {
                         "application/json": components["schemas"]["UserBase"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -180,7 +180,14 @@ export interface paths {
                 };
             };
             responses: {
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -243,7 +250,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -311,7 +318,7 @@ export interface paths {
                         "application/json": components["schemas"]["University"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -373,7 +380,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -401,7 +408,7 @@ export interface paths {
                         "application/json": components["schemas"]["Discussion"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -520,7 +527,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"][];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -548,7 +555,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -593,7 +600,7 @@ export interface paths {
                         "application/json": components["schemas"]["Reply"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -678,7 +685,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -746,7 +753,7 @@ export interface paths {
                         "application/json": components["schemas"]["Class"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -831,7 +838,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -899,7 +906,7 @@ export interface paths {
                         "application/json": components["schemas"]["Tag"];
                     };
                 };
-                422: components["responses"]["UNPROCESSABLE_ENTITY"];
+                422: components["responses"]["UNPROCESSABLE_CONTENT"];
                 default: components["responses"]["DEFAULT_ERROR"];
             };
         };
@@ -1189,8 +1196,8 @@ export interface components {
                 "application/json": components["schemas"]["Error"];
             };
         };
-        /** @description Unprocessable Entity */
-        UNPROCESSABLE_ENTITY: {
+        /** @description Unprocessable Content */
+        UNPROCESSABLE_CONTENT: {
             headers: {
                 [name: string]: unknown;
             };
